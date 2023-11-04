@@ -135,7 +135,7 @@ func (b *categoryRepo) GetList(c context.Context, req *catalog_service.ListCateg
 		params["search"] = req.Search
 	}
 
-	countQuery := `SELECT count(1) FROM "categories" WHERE true ` + filter
+	countQuery := `SELECT count(1) FROM "categories" WHERE "active" ` + filter
 
 	q, arr := helper.ReplaceQueryParams(countQuery, params)
 	err = b.db.QueryRow(c, q, arr...).Scan(
@@ -157,11 +157,19 @@ func (b *categoryRepo) GetList(c context.Context, req *catalog_service.ListCateg
 			"created_at",
 			"updated_at" 
 			FROM "categories" 
-		    WHERE true` + filter
+		    WHERE "active" ` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
-	params["limit"] = req.Limit
-	params["offset"] = (req.Page - 1) * req.Limit
+
+	params["limit"] = 10
+	params["offset"] = 0
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+	}
+	if req.Page >= 0 {
+		params["offset"] = (req.Page - 1) * req.Limit
+	}
 
 	q, arr = helper.ReplaceQueryParams(query, params)
 	rows, err := b.db.Query(c, q, arr...)
@@ -216,7 +224,7 @@ func (b *categoryRepo) Update(c context.Context, req *catalog_service.UpdateCate
 				"parent_id" = $3,  
 				"order_number" = $4,
 				"updated_at" = NOW() 
-				WHERE id = $5`
+				WHERE id = $5 AND "active" `
 
 	result, err := b.db.Exec(
 		context.Background(),
