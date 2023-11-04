@@ -16,7 +16,8 @@ func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI) (
 	grpcServer = grpc.NewServer()
 
 	catalog_service.RegisterCategoryServiceServer(grpcServer, service.NewCategoryService(cfg, log, strg))
-	// catalog_service.RegisterTariffServiceServer(grpcServer, service.NewTariffService(cfg, log, strg))
+	catalog_service.RegisterProductServiceServer(grpcServer, service.NewProductService(cfg, log, strg))
+
 	reflection.Register(grpcServer)
 	return
 }

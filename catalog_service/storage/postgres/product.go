@@ -59,6 +59,7 @@ func (b *productRepo) Create(c context.Context, req *catalog_service.CreateProdu
 func (b *productRepo) Get(c context.Context, req *catalog_service.IdRequest) (resp *catalog_service.Product, err error) {
 	query := `
 		SELECT 
+			"id",
 			"title", 
 			"description", 
 			"photo",    
@@ -70,7 +71,7 @@ func (b *productRepo) Get(c context.Context, req *catalog_service.IdRequest) (re
 			"created_at",
 			"updated_at" 
 		FROM "products" 
-		WHERE id=$1 AND "active"`
+		WHERE id=$1 AND "active" AND "deleted_at" IS NULL `
 
 	var (
 		createdAt sql.NullString
@@ -122,15 +123,16 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 	}
 
 	if req.Type != "" {
-		filter += " AND type == :type"
+		filter += " AND type = :type"
 		params["type"] = req.Type
 	}
 
 	if req.Category != 0 {
-
+		filter += " AND category_id = :category_id"
+		params["category_id"] = req.Category
 	}
 
-	countQuery := `SELECT count(1) FROM "products" WHERE true ` + filter
+	countQuery := `SELECT count(1) FROM "products" WHERE "deleted_at" IS NULL AND "active"` + filter
 
 	q, arr := helper.ReplaceQueryParams(countQuery, params)
 	err = b.db.QueryRow(c, q, arr...).Scan(
@@ -145,14 +147,17 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 			SELECT 
 			"id",
 			"title", 
-			"image", 
-			"active", 
-			"parent_id",  
-			"order_number",
+			"description", 
+			"photo",    
+			"order_number", 
+			"active",
+			"type",
+			"price",
+			"category_id",
 			"created_at",
 			"updated_at" 
 			FROM "products" 
-		    WHERE true` + filter
+		    WHERE "active" AND "deleted_at" IS NULL ` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
 	params["limit"] = req.Limit
@@ -167,7 +172,6 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 
 	var createdAt sql.NullString
 	var updatedAt sql.NullString
-	var parentId sql.NullInt32
 
 	for rows.Next() {
 		var product catalog_service.Product
@@ -175,19 +179,20 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 		err = rows.Scan(
 			&product.Id,
 			&product.Title,
-			&product.Image,
-			&product.Active,
-			&parentId,
+			&product.Description,
+			&product.Photo,
 			&product.OrderNumber,
+			&product.Active,
+			&product.ProductType,
+			&product.Price,
+			&product.CategoryId,
 			&createdAt,
 			&updatedAt,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error while scanning product err: %w", err)
 		}
-		if parentId.Valid {
-			product.ParentId = parentId.Int32
-		}
+
 		if createdAt.Valid {
 			product.CreatedAt = createdAt.String
 
@@ -195,7 +200,7 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 		if updatedAt.Valid {
 			product.UpdatedAt = createdAt.String
 		}
-		resp.Categories = append(resp.Categories, &product)
+		resp.Products = append(resp.Products, &product)
 	}
 
 	return &resp, nil
@@ -207,19 +212,25 @@ func (b *productRepo) Update(c context.Context, req *catalog_service.UpdateProdu
 				UPDATE "products" 
 				SET 
 				"title" = $1,
-				"image" = $2,
-				"parent_id" = $3,  
+				"description" = $2,
+				"photo" = $3, 
 				"order_number" = $4,
-				"updated_at" = NOW() 
-				WHERE id = $5`
+				"type" = $5,
+				"price" = $6,
+				"category_id" = $7,
+				"updated_at" = NOW()
+				WHERE id = $8 AND "active" AND "deleted_at" IS NULL`
 
 	result, err := b.db.Exec(
 		context.Background(),
 		query,
 		req.Title,
-		req.Image,
-		req.ParentId,
+		req.Description,
+		req.Photo,
 		req.OrderNumber,
+		req.ProductType,
+		req.Price,
+		req.CategoryId,
 		req.Id,
 	)
 
@@ -241,7 +252,7 @@ func (b *productRepo) Delete(c context.Context, req *catalog_service.IdRequest) 
 				SET 
 				"active" = false,
 				"deleted_at" = NOW() 
-				WHERE id = $1 AND "active"`
+				WHERE id = $1 AND "active" AND "deleted_at" IS NULL`
 
 	result, err := b.db.Exec(
 		context.Background(),
