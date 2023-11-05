@@ -20,7 +20,7 @@ func main() {
 	}
 
 	s := grpc.SetUpServer(cfg, lg, strg)
-	lis, err := net.Listen("tcp", cfg.CatalogServicePort)
+	lis, err := net.Listen("tcp", cfg.OrderServicePort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

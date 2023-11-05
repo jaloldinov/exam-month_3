@@ -6,22 +6,22 @@ import (
 )
 
 type StorageI interface {
-	Category() CategoryI
-	Product() ProductI
+	Order() OrderI
+	// DeliveryTariff() DeliveryTariffI
 }
 
-type CategoryI interface {
-	Create(context.Context, *pb.CreateCategoryRequest) (string, error)
-	Get(context.Context, *pb.IdRequest) (*pb.Category, error)
-	GetList(context.Context, *pb.ListCategoryRequest) (*pb.ListCategoryResponse, error)
-	Update(context.Context, *pb.UpdateCategoryRequest) (string, error)
+type OrderI interface {
+	Create(context.Context, *pb.CreateOrderRequest) (string, error)
+	Get(context.Context, *pb.IdRequest) (*pb.Order, error)
+	GetList(context.Context, *pb.ListOrderRequest) (*pb.ListOrderResponse, error)
+	Update(context.Context, *pb.UpdateOrderRequest) (string, error)
 	Delete(context.Context, *pb.IdRequest) (string, error)
 }
 
-type ProductI interface {
-	Create(context.Context, *pb.CreateProductRequest) (string, error)
-	Get(context.Context, *pb.IdRequest) (*pb.Product, error)
-	GetList(context.Context, *pb.ListProductRequest) (*pb.ListProductResponse, error)
-	Update(context.Context, *pb.UpdateProductRequest) (string, error)
-	Delete(context.Context, *pb.IdRequest) (string, error)
-}
+// type DeliveryTariffI interface {
+// 	Create(context.Context, *pb.CreateDeliveryTariffRequest) (string, error)
+// 	Get(context.Context, *pb.IdRequest) (*pb.DeliveryTariff, error)
+// 	GetList(context.Context, *pb.ListDeliveryTariffRequest) (*pb.ListDeliveryTariffResponse, error)
+// 	Update(context.Context, *pb.UpdateDeliveryTariffRequest) (string, error)
+// 	Delete(context.Context, *pb.IdRequest) (string, error)
+// }

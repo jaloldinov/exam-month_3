@@ -28,9 +28,9 @@ type Config struct {
 	DefaultOffset int
 	DefaultLimit  int
 
-	// catalog configuration
-	CatalogServiceHost string
-	CatalogServicePort string
+	// order configuration
+	OrderServiceHost string
+	OrderServicePort string
 }
 
 const (
@@ -65,8 +65,8 @@ func Load() Config {
 	config.PostgresPassword = cast.ToString(getOrReturnDefaultValue("POSTGRES_PASSWORD", "2511"))
 	config.PostgresDatabase = cast.ToString(getOrReturnDefaultValue("POSTGRES_DATABASE", "order_service"))
 
-	config.CatalogServiceHost = cast.ToString(getOrReturnDefaultValue("CATALOG_SERVICE_HOST", "localhost"))
-	config.CatalogServicePort = cast.ToString(getOrReturnDefaultValue("CATALOG_GRPC_PORT", ":5002"))
+	config.OrderServiceHost = cast.ToString(getOrReturnDefaultValue("ORDER_SERVICE_HOST", "localhost"))
+	config.OrderServicePort = cast.ToString(getOrReturnDefaultValue("ORDER_GRPC_PORT", ":5002"))
 
 	config.PostgresMaxConnections = cast.ToInt32(getOrReturnDefaultValue("POSTGRES_MAX_CONNECTIONS", 30))
 

@@ -15,8 +15,7 @@ import (
 func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI) (grpcServer *grpc.Server) {
 	grpcServer = grpc.NewServer()
 
-	order_service.RegisterCategoryServiceServer(grpcServer, service.NewCategoryService(cfg, log, strg))
-	order_service.RegisterProductServiceServer(grpcServer, service.NewProductService(cfg, log, strg))
+	order_service.RegisterOrderServiceServer(grpcServer, service.NewOrderService(cfg, log, strg))
 
 	reflection.Register(grpcServer)
 	return
