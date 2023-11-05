@@ -21,6 +21,56 @@ func NewOrder(db *pgxpool.Pool) *orderRepo {
 		db: db,
 	}
 }
+func (b *orderRepo) UpdateStatus(c context.Context, req *order_service.UpdateOrderStatusRequest) (string, error) {
+	// Get the previous status
+	prevStatus, err := b.GetOrderStatus(c, int(req.Id), req.OrderId)
+	if err != nil {
+		return "", fmt.Errorf("failed to get previous status: %w", err)
+	}
+
+	// Check if the previous status matches
+	switch req.Status {
+	case "courier_accepted":
+		if prevStatus != "accepted" {
+			return "", fmt.Errorf("previous status must be 'accepted' to update to 'courier_accepted'")
+		}
+	case "ready_in_branch":
+		if prevStatus != "courier_accepted" {
+			return "", fmt.Errorf("previous status must be 'ready_in_branch' to update to 'courier_accepted'")
+		}
+	case "on_way":
+		if prevStatus != "courier_accepted" {
+			return "", fmt.Errorf("previous status must be 'ready_in_branch' to update to 'on_way'")
+		}
+	case "finished":
+		if prevStatus != "on_way" {
+			return "", fmt.Errorf("previous status must be 'on_way' to update to 'finished'")
+		}
+	}
+
+	query := `
+		UPDATE "orders" 
+		SET "status" = $1, "updated_at" = NOW()
+		WHERE id = $2 AND "order_id" = $3 AND "deleted_at" IS NULL`
+
+	result, err := b.db.Exec(
+		context.Background(),
+		query,
+		req.Status,
+		req.Id,
+		req.OrderId,
+	)
+
+	if err != nil {
+		return "", fmt.Errorf("failed to update status: %w", err)
+	}
+
+	if result.RowsAffected() == 0 {
+		return "", fmt.Errorf("order with ID %d not found", req.Id)
+	}
+
+	return fmt.Sprintf("status changed from '%s' to '%s'", prevStatus, req.Status), nil
+}
 
 func (b *orderRepo) Create(c context.Context, req *order_service.CreateOrderRequest) (string, error) {
 	order_id := helper.GenerateUniqueID()
@@ -207,7 +257,7 @@ func (b *orderRepo) GetList(c context.Context, req *order_service.ListOrderReque
 	if req.Limit > 0 {
 		params["limit"] = req.Limit
 	}
-	if req.Page >= 0 {
+	if req.Page > 0 {
 		params["offset"] = (req.Page - 1) * req.Limit
 	}
 
@@ -324,4 +374,21 @@ func (b *orderRepo) Delete(c context.Context, req *order_service.IdRequest) (res
 	}
 
 	return "deleted", nil
+}
+
+func (b *orderRepo) GetOrderStatus(c context.Context, ID int, orderID string) (string, error) {
+	query := `
+		SELECT "status" FROM "orders"
+		WHERE id = $1 AND order_id = $2 AND "deleted_at" IS NULL`
+
+	var status string
+	err := b.db.QueryRow(c, query, ID, orderID).Scan(&status)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", fmt.Errorf("order with ID %s not found", orderID)
+		}
+		return "", fmt.Errorf("failed to get order status: %w", err)
+	}
+
+	return status, nil
 }

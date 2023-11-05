@@ -15,6 +15,7 @@ type OrderI interface {
 	Get(context.Context, *pb.IdRequest) (*pb.Order, error)
 	GetList(context.Context, *pb.ListOrderRequest) (*pb.ListOrderResponse, error)
 	Update(context.Context, *pb.UpdateOrderRequest) (string, error)
+	UpdateStatus(context.Context, *pb.UpdateOrderStatusRequest) (string, error)
 	Delete(context.Context, *pb.IdRequest) (string, error)
 }
 

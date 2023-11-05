@@ -60,6 +60,15 @@ func (s *OrderService) Update(ctx context.Context, req *order_service.UpdateOrde
 	return &order_service.Response{Message: resp}, nil
 }
 
+func (s *OrderService) UpdateStatus(ctx context.Context, req *order_service.UpdateOrderStatusRequest) (*order_service.Response, error) {
+	resp, err := s.storage.Order().UpdateStatus(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &order_service.Response{Message: resp}, nil
+}
+
 func (s *OrderService) Delete(ctx context.Context, req *order_service.IdRequest) (*order_service.Response, error) {
 	resp, err := s.storage.Order().Delete(context.Background(), req)
 	if err != nil {

@@ -26,6 +26,7 @@ type OrderServiceClient interface {
 	Get(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Order, error)
 	List(ctx context.Context, in *ListOrderRequest, opts ...grpc.CallOption) (*ListOrderResponse, error)
 	Update(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*Response, error)
+	UpdateStatus(ctx context.Context, in *UpdateOrderStatusRequest, opts ...grpc.CallOption) (*Response, error)
 	Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
 }
 
@@ -73,6 +74,15 @@ func (c *orderServiceClient) Update(ctx context.Context, in *UpdateOrderRequest,
 	return out, nil
 }
 
+func (c *orderServiceClient) UpdateStatus(ctx context.Context, in *UpdateOrderStatusRequest, opts ...grpc.CallOption) (*Response, error) {
+	out := new(Response)
+	err := c.cc.Invoke(ctx, "/order_service.OrderService/UpdateStatus", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *orderServiceClient) Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error) {
 	out := new(Response)
 	err := c.cc.Invoke(ctx, "/order_service.OrderService/Delete", in, out, opts...)
@@ -90,6 +100,7 @@ type OrderServiceServer interface {
 	Get(context.Context, *IdRequest) (*Order, error)
 	List(context.Context, *ListOrderRequest) (*ListOrderResponse, error)
 	Update(context.Context, *UpdateOrderRequest) (*Response, error)
+	UpdateStatus(context.Context, *UpdateOrderStatusRequest) (*Response, error)
 	Delete(context.Context, *IdRequest) (*Response, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
@@ -109,6 +120,9 @@ func (UnimplementedOrderServiceServer) List(context.Context, *ListOrderRequest) 
 }
 func (UnimplementedOrderServiceServer) Update(context.Context, *UpdateOrderRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
+}
+func (UnimplementedOrderServiceServer) UpdateStatus(context.Context, *UpdateOrderStatusRequest) (*Response, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateStatus not implemented")
 }
 func (UnimplementedOrderServiceServer) Delete(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
@@ -198,6 +212,24 @@ func _OrderService_Update_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_UpdateStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateOrderStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).UpdateStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/order_service.OrderService/UpdateStatus",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).UpdateStatus(ctx, req.(*UpdateOrderStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OrderService_Delete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IdRequest)
 	if err := dec(in); err != nil {
@@ -238,6 +270,10 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Update",
 			Handler:    _OrderService_Update_Handler,
+		},
+		{
+			MethodName: "UpdateStatus",
+			Handler:    _OrderService_UpdateStatus_Handler,
 		},
 		{
 			MethodName: "Delete",
