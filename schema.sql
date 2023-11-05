@@ -143,21 +143,30 @@ CREATE TABLE "order_products" (
   "order_id" int NOT NULL,
   "product_id" int,
   "quantity" int,
-  "price" numeric
+  "price" numeric,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp,
+  "deleted_at" timestamp
 );
 
 CREATE TABLE "delivery_tarif" (
   "id" serial PRIMARY KEY,
   "name" varchar(255),
   "type" delivery_tarif_type,
-  "base_price" numeric
+  "base_price" numeric,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp,
+  "deleted_at" timestamp
 );
 
 CREATE TABLE "delivery_tarif_values" (
   "delivery_tarif_id" int NOT NULL,
   "from_price" numeric,
   "to_price" numeric,
-  "price" numeric
+  "price" numeric,
+  "created_at" timestamp DEFAULT (now()),
+  "updated_at" timestamp,
+  "deleted_at" timestamp
 );
 
 ALTER TABLE "categories" ADD FOREIGN KEY ("parent_id") REFERENCES "categories" ("id");
@@ -171,3 +180,4 @@ ALTER TABLE "users" ADD FOREIGN KEY ("branch_id") REFERENCES "branches" ("id");
 ALTER TABLE "order_products" ADD FOREIGN KEY ("order_id") REFERENCES "orders" ("id");
 
 ALTER TABLE "delivery_tarif_values" ADD FOREIGN KEY ("delivery_tarif_id") REFERENCES "delivery_tarif" ("id");
+

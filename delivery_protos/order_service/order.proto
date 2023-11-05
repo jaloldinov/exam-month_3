@@ -1,0 +1,90 @@
+syntax = "proto3";
+
+package order_service;
+option go_package = "genproto/order_service";
+
+
+service OrderService {
+    rpc Create(CreateOrderRequest) returns (Response) {}
+    rpc Get(IdRequest) returns (Order) {}
+    rpc List(ListOrderRequest) returns (ListOrderResponse) {}
+    rpc Update(UpdateOrderRequest) returns (Response) {}
+    rpc Delete(IdRequest) returns (Response) {}
+}
+
+message CreateOrderRequest {
+    int32 client_id = 1;
+    int32 branch_id = 2;
+    string type = 3; // delivery, pick-up
+    string address = 4;
+    int32 courier_id = 5;
+    double price = 6;
+    double delivery_price = 7;
+    double discount = 8;
+    string status = 9;
+    string payment_type = 10; //  'cash','card'
+}
+
+message Order {
+    int32 id = 1;
+    int32 order_id = 2;
+    int32 client_id = 3;
+    int32 branch_id = 4;
+    string type = 5; // delivery, pick-up
+    string address = 6;
+    int32 courier_id = 7;
+    double price = 8;
+    double delivery_price = 9;
+    double discount = 10;
+    string status = 11;
+    string payment_type = 12; //  'cash','card'
+}
+
+message UpdateOrderRequest {
+    int32 id = 1;
+    int32 order_id = 2;
+    int32 client_id = 3;
+    int32 branch_id = 4;
+    string type = 5; // delivery, pick-up
+    string address = 6;
+    int32 courier_id = 7;
+    double price = 8;
+    double delivery_price = 9;
+    double discount = 10;
+    string status = 11;
+    string payment_type = 12; //  'cash','card'
+}
+
+message ListOrderRequest {
+    int32 limit = 1;
+    int32 page = 2;
+    int32 order_id = 3;
+    int32 client_id = 4;
+    int32 branch_id = 5;
+    string delivery_type = 6;
+    int32 courier_id = 7;
+    double price_from = 8;
+    double price_to = 9;
+    string payment_type = 10;
+}
+
+message ListOrderResponse {
+     repeated Order Orders = 1;
+     int32 count = 2;
+}
+
+
+message Response {
+    string message = 1;
+}
+
+message IdRequest {
+    string id = 1;
+}
+
+message OrderProducts {
+    int32 order_id = 1;
+    int32 product_id = 2;
+    int32 quantity = 3;
+    double price = 4;
+}

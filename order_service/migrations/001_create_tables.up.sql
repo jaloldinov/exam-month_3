@@ -41,7 +41,7 @@ CREATE TABLE "orders" (
 );
 
 CREATE TABLE "order_products" (
-  "order_id" int NOT NULL REFERENCES "orders"("order_id"),
+  "order_id" varchar NOT NULL REFERENCES "orders"("order_id"),
   "product_id" int,
   "quantity" int,
   "price" numeric,
