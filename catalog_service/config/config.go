@@ -58,13 +58,15 @@ func Load() Config {
 	config := Config{}
 
 	config.Environment = cast.ToString(getOrReturnDefaultValue("ENVIRONMENT", DebugMode))
-	config.Port = cast.ToString(getOrReturnDefaultValue("PORT", 8000))
 
 	config.PostgresHost = cast.ToString(getOrReturnDefaultValue("POSTGRES_HOST", "localhost"))
 	config.PostgresPort = cast.ToInt(getOrReturnDefaultValue("POSTGRES_PORT", 5432))
 	config.PostgresUser = cast.ToString(getOrReturnDefaultValue("POSTGRES_USER", "postgres"))
 	config.PostgresPassword = cast.ToString(getOrReturnDefaultValue("POSTGRES_PASSWORD", "2511"))
 	config.PostgresDatabase = cast.ToString(getOrReturnDefaultValue("POSTGRES_DATABASE", "catalog_service"))
+
+	config.CatalogServiceHost = cast.ToString(getOrReturnDefaultValue("CATALOG_SERVICE_HOST", "localhost"))
+	config.CatalogServicePort = cast.ToString(getOrReturnDefaultValue("CATALOG_GRPC_PORT", ":5001"))
 
 	config.PostgresMaxConnections = cast.ToInt32(getOrReturnDefaultValue("POSTGRES_MAX_CONNECTIONS", 30))
 

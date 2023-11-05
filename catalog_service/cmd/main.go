@@ -7,7 +7,6 @@ import (
 	"catalog_service/pkg/logger"
 	"catalog_service/storage/postgres"
 	"context"
-	"fmt"
 	"log"
 	"net"
 )
@@ -21,7 +20,7 @@ func main() {
 	}
 
 	s := grpc.SetUpServer(cfg, lg, strg)
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", 5001))
+	lis, err := net.Listen("tcp", cfg.CatalogServicePort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

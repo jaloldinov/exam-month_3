@@ -160,8 +160,15 @@ func (b *productRepo) GetList(c context.Context, req *catalog_service.ListProduc
 		    WHERE "active" AND "deleted_at" IS NULL ` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
-	params["limit"] = req.Limit
-	params["offset"] = (req.Page - 1) * req.Limit
+	params["limit"] = 10
+	params["offset"] = 0
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+	}
+	if req.Page >= 0 {
+		params["offset"] = (req.Page - 1) * req.Limit
+	}
 
 	q, arr = helper.ReplaceQueryParams(query, params)
 	rows, err := b.db.Query(c, q, arr...)
