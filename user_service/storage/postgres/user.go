@@ -23,7 +23,11 @@ func NewUser(db *pgxpool.Pool) *userRepo {
 }
 
 func (b *userRepo) Create(c context.Context, req *user_service.CreateUsersRequest) (*user_service.Response, error) {
-
+	hashedPass, err := helper.GeneratePasswordHash(req.Password)
+	if err != nil {
+		fmt.Println("error while generating password")
+		return nil, err
+	}
 	query := `
 	  INSERT INTO users (
 		first_name,
@@ -38,13 +42,13 @@ func (b *userRepo) Create(c context.Context, req *user_service.CreateUsersReques
 	  ) RETURNING id`
 
 	var id int
-	err := b.db.QueryRow(c, query,
+	err = b.db.QueryRow(c, query,
 		req.Firstname,
 		req.Lastname,
 		req.BranchId,
 		req.Phone,
 		req.Login,
-		req.Password,
+		hashedPass,
 	).Scan(&id)
 
 	if err != nil {
@@ -53,6 +57,7 @@ func (b *userRepo) Create(c context.Context, req *user_service.CreateUsersReques
 
 	return &user_service.Response{Message: fmt.Sprintf("%d", id)}, nil
 }
+
 func (b *userRepo) Get(c context.Context, req *user_service.IdRequest) (resp *user_service.Users, err error) {
 	var (
 		createdAt sql.NullString
@@ -115,12 +120,21 @@ func (b *userRepo) GetList(c context.Context, req *user_service.ListUsersRequest
 		params    = make(map[string]interface{})
 	)
 
-	if req.Search != "" {
-		filter += " AND (first_name ILIKE '%' || :search || '%' OR last_name ILIKE '%' || :search || '%' OR phone ILIKE '%' || :search || '%') "
-		params["search"] = req.Search
+	if req.Firstname != "" {
+		filter += " AND (first_name ILIKE '%' || :firstname || '%') "
+		params["firstname"] = req.Firstname
 	}
 
-	// Filter with created at range
+	if req.Lastname != "" {
+		filter += " AND (last_name ILIKE '%' || :lastname || '%') "
+		params["lastname"] = req.Lastname
+	}
+
+	if req.Phone != "" {
+		filter += " AND (phone = :phone) "
+		params["phone"] = req.Phone
+	}
+
 	if req.CreatedAtFrom != "" {
 		filter += " AND created_at >= :created_at_from"
 		params["created_at_from"] = req.CreatedAtFrom
@@ -156,8 +170,15 @@ func (b *userRepo) GetList(c context.Context, req *user_service.ListUsersRequest
 	FROM users  where "active" and "deleted_at" is null` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
-	params["limit"] = req.Limit
-	params["offset"] = (req.Page - 1) * req.Limit
+	params["limit"] = 10
+	params["offset"] = 0
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+	}
+	if req.Page > 0 {
+		params["offset"] = (req.Page - 1) * req.Limit
+	}
 
 	q, arr = helper.ReplaceQueryParams(query, params)
 	rows, err := b.db.Query(c, q, arr...)
@@ -198,7 +219,11 @@ func (b *userRepo) GetList(c context.Context, req *user_service.ListUsersRequest
 }
 
 func (b *userRepo) Update(c context.Context, req *user_service.UpdateUsersRequest) (string, error) {
-
+	hashedPass, err := helper.GeneratePasswordHash(req.Password)
+	if err != nil {
+		fmt.Println("error while generating password")
+		return "", err
+	}
 	query := `
 				UPDATE "users" 
 				SET 
@@ -219,7 +244,7 @@ func (b *userRepo) Update(c context.Context, req *user_service.UpdateUsersReques
 		req.BranchId,
 		req.Phone,
 		req.Login,
-		req.Password,
+		hashedPass,
 		req.Id,
 	)
 

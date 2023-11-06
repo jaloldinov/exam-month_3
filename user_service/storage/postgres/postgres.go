@@ -58,12 +58,14 @@ func (d *strg) Users() storage.UsersI {
 	}
 	return d.user
 }
+
 func (d *strg) Couriers() storage.CouriersI {
 	if d.courier == nil {
 		d.courier = NewCourier(d.db)
 	}
 	return d.courier
 }
+
 func (d *strg) Clients() storage.ClientsI {
 	if d.client == nil {
 		d.client = NewClient(d.db)

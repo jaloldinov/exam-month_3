@@ -24,6 +24,12 @@ func NewCourier(db *pgxpool.Pool) *courierRepo {
 
 func (b *courierRepo) Create(c context.Context, req *user_service.CreateCouriersRequest) (*user_service.Response, error) {
 
+	hashedPass, err := helper.GeneratePasswordHash(req.Password)
+	if err != nil {
+		fmt.Println("error while generating password")
+		return nil, err
+	}
+
 	query := `
 	  INSERT INTO couriers (
 		first_name,
@@ -39,13 +45,13 @@ func (b *courierRepo) Create(c context.Context, req *user_service.CreateCouriers
 	  ) RETURNING id`
 
 	var id int
-	err := b.db.QueryRow(c, query,
+	err = b.db.QueryRow(c, query,
 		req.Firstname,
 		req.Lastname,
 		req.BranchId,
 		req.Phone,
 		req.Login,
-		req.Password,
+		hashedPass,
 		req.MaxOrderCount,
 	).Scan(&id)
 
@@ -55,6 +61,7 @@ func (b *courierRepo) Create(c context.Context, req *user_service.CreateCouriers
 
 	return &user_service.Response{Message: fmt.Sprintf("%d", id)}, nil
 }
+
 func (b *courierRepo) Get(c context.Context, req *user_service.IdRequest) (resp *user_service.Couriers, err error) {
 	var (
 		createdAt sql.NullString
@@ -119,11 +126,21 @@ func (b *courierRepo) GetList(c context.Context, req *user_service.ListCouriersR
 		params    = make(map[string]interface{})
 	)
 
-	if req.Search != "" {
-		filter += " AND (first_name ILIKE '%' || :search || '%' OR last_name ILIKE '%' || :search || '%' OR phone ILIKE '%' || :search || '%') "
-		params["search"] = req.Search
+	if req.Firstname != "" {
+		filter += " AND (first_name ILIKE '%' || :firstname || '%') "
+		params["firstname"] = req.Firstname
 	}
-	// Filter with created at range
+
+	if req.Lastname != "" {
+		filter += " AND (last_name ILIKE '%' || :lastname || '%') "
+		params["lastname"] = req.Lastname
+	}
+
+	if req.Phone != "" {
+		filter += " AND (phone = :phone) "
+		params["phone"] = req.Phone
+	}
+
 	if req.CreatedAtFrom != "" {
 		filter += " AND created_at >= :created_at_from"
 		params["created_at_from"] = req.CreatedAtFrom
@@ -134,7 +151,7 @@ func (b *courierRepo) GetList(c context.Context, req *user_service.ListCouriersR
 		params["created_at_to"] = req.CreatedAtTo
 	}
 
-	countQuery := `SELECT count(1) FROM "users" WHERE "deleted_at" IS NULL AND "active"` + filter
+	countQuery := `SELECT count(1) FROM "couriers" WHERE "deleted_at" IS NULL AND "active"` + filter
 	q, arr := helper.ReplaceQueryParams(countQuery, params)
 	err = b.db.QueryRow(c, q, arr...).Scan(
 		&resp.Count,
@@ -151,6 +168,7 @@ func (b *courierRepo) GetList(c context.Context, req *user_service.ListCouriersR
 	        last_name,
 	        phone,
 			active,
+			branch_id,
 	        login,
 	        password,
 			max_order_count,
@@ -159,8 +177,15 @@ func (b *courierRepo) GetList(c context.Context, req *user_service.ListCouriersR
 	FROM couriers  where "active" and "deleted_at" is null` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
-	params["limit"] = req.Limit
-	params["offset"] = (req.Page - 1) * req.Limit
+	params["limit"] = 10
+	params["offset"] = 0
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+	}
+	if req.Page > 0 {
+		params["offset"] = (req.Page - 1) * req.Limit
+	}
 
 	q, arr = helper.ReplaceQueryParams(query, params)
 	rows, err := b.db.Query(c, q, arr...)
@@ -177,6 +202,7 @@ func (b *courierRepo) GetList(c context.Context, req *user_service.ListCouriersR
 			&courier.Lastname,
 			&courier.Phone,
 			&courier.Active,
+			&courier.BranchId,
 			&courier.Login,
 			&courier.Password,
 			&courier.MaxOrderCount,

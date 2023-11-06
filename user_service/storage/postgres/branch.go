@@ -57,6 +57,7 @@ func (b *branchRepo) Create(c context.Context, req *user_service.CreateBranchReq
 
 	return &user_service.Response{Message: fmt.Sprintf("%d", id)}, nil
 }
+
 func (b *branchRepo) Get(c context.Context, req *user_service.IdRequest) (resp *user_service.Branch, err error) {
 	var (
 		updatedAt sql.NullString
@@ -160,8 +161,15 @@ func (b *branchRepo) GetList(c context.Context, req *user_service.ListBranchRequ
 	FROM branches  where "active" and "deleted_at" is null` + filter
 
 	query += " ORDER BY created_at DESC LIMIT :limit OFFSET :offset"
-	params["limit"] = req.Limit
-	params["offset"] = (req.Page - 1) * req.Limit
+	params["limit"] = 10
+	params["offset"] = 0
+
+	if req.Limit > 0 {
+		params["limit"] = req.Limit
+	}
+	if req.Page > 0 {
+		params["offset"] = (req.Page - 1) * req.Limit
+	}
 
 	q, arr = helper.ReplaceQueryParams(query, params)
 	rows, err := b.db.Query(c, q, arr...)
