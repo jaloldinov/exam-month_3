@@ -40,7 +40,7 @@ func IsValidPassword(password string) bool {
 	// (non-alphanumeric character)
 	match, _ := regexp.MatchString(`[~!@#$%^&*()_+{}|:"<>?/\[\]\;',\.]`, password)
 	if !match {
-		return false
+		return match
 	}
 
 	return true
