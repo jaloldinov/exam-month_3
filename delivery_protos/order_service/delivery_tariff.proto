@@ -13,23 +13,29 @@ service DeliveryTariffService {
 }
 
 message CreateDeliveryTariffRequest {
-    int32 name = 1;
+    string name = 1;
     string tariff_type = 2; //  'fixed', 'alternative'
     double base_price = 3; 
+    DeliveryTariffValues Values = 4;
 }
 
 message DeliveryTariff {
     int32 id = 1;
-    int32 name = 2;
+    string name = 2;
     string tariff_type = 3; //  'fixed', 'alternative'
     double base_price = 4; 
+    DeliveryTariffValues Values = 5;
+    string created_at = 6;
+    string updated_at = 7;
 }
 
 message UpdateDeliveryTariffRequest {
     int32 id = 1;
-    int32 name = 2;
+    string name = 2;
     string tariff_type = 3; //  'fixed', 'alternative'
     double base_price = 4; 
+    DeliveryTariffValues Values = 5;
+
 }
 
 message ListDeliveryTariffRequest {
@@ -45,7 +51,6 @@ message ListDeliveryTariffResponse {
 }
 
 message DeliveryTariffValues {
-    int32 delivery_tarif_id = 1;
     double from_price = 2;
     double to_price = 3;
     double price = 4;

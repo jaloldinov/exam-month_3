@@ -9,6 +9,7 @@ service OrderService {
     rpc Get(IdRequest) returns (Order) {}
     rpc List(ListOrderRequest) returns (ListOrderResponse) {}
     rpc Update(UpdateOrderRequest) returns (Response) {}
+    rpc UpdateStatus(UpdateOrderStatusRequest) returns (Response) {}
     rpc Delete(IdRequest) returns (Response) {}
 }
 
@@ -21,13 +22,29 @@ message CreateOrderRequest {
     double price = 6;
     double delivery_price = 7;
     double discount = 8;
-    string status = 9;
-    string payment_type = 10; //  'cash','card'
+    string payment_type = 9; //  'cash','card'
 }
 
 message Order {
     int32 id = 1;
-    int32 order_id = 2;
+    string order_id = 2;
+    int32 client_id = 3;
+    int32 branch_id = 4;
+    string type = 5; // delivery, pick-up
+    string address = 6;
+    int32 courier_id = 7;
+    double price = 8;
+    double delivery_price = 9;
+    double discount = 10;
+    string status = 11;
+    string payment_type = 12; //  'cash','card'
+    string created_at = 13;
+    string updated_at = 14;
+}
+
+message UpdateOrderRequest {
+    int32 id = 1;
+    string order_id = 2;
     int32 client_id = 3;
     int32 branch_id = 4;
     string type = 5; // delivery, pick-up
@@ -40,25 +57,16 @@ message Order {
     string payment_type = 12; //  'cash','card'
 }
 
-message UpdateOrderRequest {
+message UpdateOrderStatusRequest {
     int32 id = 1;
-    int32 order_id = 2;
-    int32 client_id = 3;
-    int32 branch_id = 4;
-    string type = 5; // delivery, pick-up
-    string address = 6;
-    int32 courier_id = 7;
-    double price = 8;
-    double delivery_price = 9;
-    double discount = 10;
-    string status = 11;
-    string payment_type = 12; //  'cash','card'
+    string order_id = 2;
+    string status = 3;
 }
 
 message ListOrderRequest {
     int32 limit = 1;
     int32 page = 2;
-    int32 order_id = 3;
+    string order_id = 3;
     int32 client_id = 4;
     int32 branch_id = 5;
     string delivery_type = 6;
@@ -72,7 +80,6 @@ message ListOrderResponse {
      repeated Order Orders = 1;
      int32 count = 2;
 }
-
 
 message Response {
     string message = 1;
