@@ -65,7 +65,4 @@ CREATE TABLE "delivery_tarif_values" (
   "from_price" numeric,
   "to_price" numeric,
   "price" numeric,
-  "created_at" timestamp DEFAULT (now()),
-  "updated_at" timestamp,
-  "deleted_at" timestamp
 );

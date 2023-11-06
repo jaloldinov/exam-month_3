@@ -7,7 +7,7 @@ import (
 
 type StorageI interface {
 	Order() OrderI
-	// DeliveryTariff() DeliveryTariffI
+	DeliveryTariff() DeliveryTariffI
 }
 
 type OrderI interface {
@@ -19,10 +19,10 @@ type OrderI interface {
 	Delete(context.Context, *pb.IdRequest) (string, error)
 }
 
-// type DeliveryTariffI interface {
-// 	Create(context.Context, *pb.CreateDeliveryTariffRequest) (string, error)
-// 	Get(context.Context, *pb.IdRequest) (*pb.DeliveryTariff, error)
-// 	GetList(context.Context, *pb.ListDeliveryTariffRequest) (*pb.ListDeliveryTariffResponse, error)
-// 	Update(context.Context, *pb.UpdateDeliveryTariffRequest) (string, error)
-// 	Delete(context.Context, *pb.IdRequest) (string, error)
-// }
+type DeliveryTariffI interface {
+	Create(context.Context, *pb.CreateDeliveryTariffRequest) (string, error)
+	Get(context.Context, *pb.IdRequest) (*pb.DeliveryTariff, error)
+	GetList(context.Context, *pb.ListDeliveryTariffRequest) (*pb.ListDeliveryTariffResponse, error)
+	Update(context.Context, *pb.UpdateDeliveryTariffRequest) (string, error)
+	Delete(context.Context, *pb.IdRequest) (string, error)
+}

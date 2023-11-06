@@ -16,6 +16,7 @@ func SetUpServer(cfg config.Config, log logger.LoggerI, strg storage.StorageI) (
 	grpcServer = grpc.NewServer()
 
 	order_service.RegisterOrderServiceServer(grpcServer, service.NewOrderService(cfg, log, strg))
+	order_service.RegisterDeliveryTariffServiceServer(grpcServer, service.NewDeliveryTariffService(cfg, log, strg))
 
 	reflection.Register(grpcServer)
 	return

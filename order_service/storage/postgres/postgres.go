@@ -10,8 +10,9 @@ import (
 )
 
 type strg struct {
-	db    *pgxpool.Pool
-	order *orderRepo
+	db             *pgxpool.Pool
+	order          *orderRepo
+	deliveryTariff *tariffRepo
 }
 
 func NewStorage(ctx context.Context, cfg config.Config) (storage.StorageI, error) {
@@ -49,9 +50,9 @@ func (d *strg) Order() storage.OrderI {
 	return d.order
 }
 
-// func (d *strg) DeliveryTariff() storage.DeliveryTariffI {
-// 	if d.deliveryTariff == nil {
-// 		d.deliveryTariff = NewDeliveryTariff(d.db)
-// 	}
-// 	return d.deliveryTariff
-// }
+func (d *strg) DeliveryTariff() storage.DeliveryTariffI {
+	if d.deliveryTariff == nil {
+		d.deliveryTariff = NewDeliveryTariff(d.db)
+	}
+	return d.deliveryTariff
+}
