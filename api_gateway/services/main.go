@@ -2,7 +2,9 @@ package services
 
 import (
 	"api_gateway/config"
-	branch_service "api_gateway/genproto"
+	catalog_service "api_gateway/genproto/catalog_service"
+	order_service "api_gateway/genproto/order_service"
+	user_service "api_gateway/genproto/user_service"
 
 	"fmt"
 
@@ -10,48 +12,94 @@ import (
 )
 
 type ServiceManager interface {
-	BranchService() branch_service.BranchServiceClient
-	BranchProductService() branch_service.BranchProductServiceClient
+	// 	CATALOG-SERVICE
+	Category() catalog_service.CategoryServiceClient
+	Product() catalog_service.ProductServiceClient
 
-	// AttributeService() position_service.AttributeServiceClient
-	// CompanyService() company_service.CompanyServiceClient
-	// PositionService() position_service.PositionServiceClient
+	// 	ORDER-SERVICE
+	Order() order_service.OrderServiceClient
+	DeliveryTariff() order_service.DeliveryTariffServiceClient
+
+	// 	USER-SERVICE
+	User() user_service.UserServiceClient
+	Client() user_service.ClientServiceClient
+	Courier() user_service.CourierServiceClient
+	Branch() user_service.BranchServiceClient
 }
 
 type grpcClients struct {
-	branchService        branch_service.BranchServiceClient
-	branchProductService branch_service.BranchProductServiceClient
+	// catalog service
+	categoryService catalog_service.CategoryServiceClient
+	productService  catalog_service.ProductServiceClient
 
-	// attributeService  position_service.AttributeServiceClient
-	// companyService    company_service.CompanyServiceClient
-	// positionService   position_service.PositionServiceClient
+	// order service
+	orderService          order_service.OrderServiceClient
+	deliveryTariftService order_service.DeliveryTariffServiceClient
+
+	// user service
+	userService    user_service.UserServiceClient
+	clientService  user_service.ClientServiceClient
+	courierService user_service.CourierServiceClient
+	branchService  user_service.BranchServiceClient
 }
 
 func NewGrpcClients(conf *config.Config) (ServiceManager, error) {
-	connBranchService, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", conf.BranchServiceHost, conf.BranchServicePort),
+	connCatalogService, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", conf.CatalogServiceHost, conf.CatalogServicePort),
 		grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
 
-	connBranchProductService, err := grpc.Dial(
-		fmt.Sprintf("%s:%d", conf.BranchServiceHost, conf.BranchServicePort),
+	connOrderService, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", conf.OrderServiceHost, conf.OrderServicePort),
+		grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+
+	connUserService, err := grpc.Dial(
+		fmt.Sprintf("%s:%d", conf.UserServiceHost, conf.UserServicePort),
 		grpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
 
 	return &grpcClients{
-		branchService:        branch_service.NewBranchServiceClient(connBranchService),
-		branchProductService: branch_service.NewBranchProductServiceClient(connBranchProductService),
+		categoryService: catalog_service.NewCategoryServiceClient(connCatalogService),
+		orderService:    order_service.NewOrderServiceClient(connOrderService),
+		userService:     user_service.NewUserServiceClient(connUserService),
 	}, nil
 }
 
-func (g *grpcClients) BranchService() branch_service.BranchServiceClient {
-	return g.branchService
+func (g *grpcClients) Category() catalog_service.CategoryServiceClient {
+	return g.categoryService
 }
 
-func (g *grpcClients) BranchProductService() branch_service.BranchProductServiceClient {
-	return g.branchProductService
+func (g *grpcClients) Product() catalog_service.ProductServiceClient {
+	return g.productService
+}
+
+func (g *grpcClients) Order() order_service.OrderServiceClient {
+	return g.orderService
+}
+
+func (g *grpcClients) DeliveryTariff() order_service.DeliveryTariffServiceClient {
+	return g.deliveryTariftService
+}
+
+func (g *grpcClients) User() user_service.UserServiceClient {
+	return g.userService
+}
+
+func (g *grpcClients) Client() user_service.ClientServiceClient {
+	return g.clientService
+}
+
+func (g *grpcClients) Courier() user_service.CourierServiceClient {
+	return g.courierService
+}
+
+func (g *grpcClients) Branch() user_service.BranchServiceClient {
+	return g.branchService
 }

@@ -10,8 +10,17 @@ import (
 type Config struct {
 	Environment string // develop, staging, production
 
-	BranchServiceHost string
-	BranchServicePort int
+	// catalog serivce
+	CatalogServiceHost string
+	CatalogServicePort int
+
+	// order serivce
+	OrderServiceHost string
+	OrderServicePort int
+
+	// user serivce
+	UserServiceHost string
+	UserServicePort int
 
 	LogLevel string
 	HttpPort string
@@ -30,11 +39,15 @@ func Load() Config {
 	config.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
 	config.HttpPort = cast.ToString(getOrReturnDefault("HTTP_PORT", ":8080"))
 
-	config.BranchServiceHost = cast.ToString(getOrReturnDefault("BRANCH_SERVICE_HOST", "localhost"))
-	config.BranchServicePort = cast.ToInt(getOrReturnDefault("BRANCH_SERVICE_PORT", 50051))
+	config.CatalogServiceHost = cast.ToString(getOrReturnDefault("CATALOG_SERVICE_HOST", "localhost"))
+	config.CatalogServicePort = cast.ToInt(getOrReturnDefault("CATALOG_SERVICE_PORT", 5001))
 
-	// config.ProfessionServiceHost = cast.ToString(getOrReturnDefault("Profession_SERVICE_HOST", "localhost"))
-	// config.ProfessionServicePort = cast.ToInt(getOrReturnDefault("Profession_SERVICE_PORT", 9103))
+	config.OrderServiceHost = cast.ToString(getOrReturnDefault("ORDER_SERVICE_HOST", "localhost"))
+	config.OrderServicePort = cast.ToInt(getOrReturnDefault("ORDER_SERVICE_PORT", 5002))
+
+	config.UserServiceHost = cast.ToString(getOrReturnDefault("USER_SERVICE_HOST", "localhost"))
+	config.UserServicePort = cast.ToInt(getOrReturnDefault("USER_SERVICE_PORT", 5003))
+
 	return config
 }
 

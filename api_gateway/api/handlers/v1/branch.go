@@ -5,36 +5,36 @@ import (
 	"errors"
 	"net/http"
 
-	branch_service "api_gateway/genproto"
+	user_service "api_gateway/genproto/user_service"
 	"api_gateway/pkg/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 // Branch godoc
-// @ID create-branch
-// @Router /v1/branch/create [POST]
-// @Summary create branch
-// @Description create branch
-// @Tags branch
+// @ID create-user
+// @Router /v1/user/create [POST]
+// @Summary create user
+// @Description create user
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param branch body branch_service.CreateBranchRequest true "branch"
-// @Success 200 {object} models.ResponseModel{data=branch_service.Branch} "desc"
+// @Param user body user_service.CreateBranchRequest true "user"
+// @Success 200 {object} models.ResponseModel{data=user_service.Branch} "desc"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) CreateBranch(c *gin.Context) {
-	var branch branch_service.CreateBranchRequest
+	var user user_service.CreateBranchRequest
 
-	if err := c.BindJSON(&branch); err != nil {
+	if err := c.BindJSON(&user); err != nil {
 		h.handleErrorResponse(c, http.StatusBadRequest, "error while binding json", err)
 		return
 	}
 
-	resp, err := h.services.BranchService().Create(c.Request.Context(), &branch)
+	resp, err := h.services.Branch().Create(c.Request.Context(), &user)
 	if err != nil {
-		h.handleErrorResponse(c, http.StatusInternalServerError, "error while creating branch", err)
+		h.handleErrorResponse(c, http.StatusInternalServerError, "error while creating user", err)
 		return
 	}
 
@@ -42,17 +42,17 @@ func (h *handlerV1) CreateBranch(c *gin.Context) {
 }
 
 // GetAllBranch godoc
-// @ID get-branch
-// @Router /v1/branch/list [GET]
-// @Summary get branch all
-// @Description get branch
-// @Tags branch
+// @ID get-user
+// @Router /v1/user/list [GET]
+// @Summary get user all
+// @Description get user
+// @Tags user
 // @Accept json
 // @Produce json
 // @Param search query string false "search"
 // @Param limit query integer false "limit"
 // @Param offset query integer false "offset"
-// @Success 200 {object} models.ResponseModel{data=branch_service.ListBranchResponse} "desc"
+// @Success 200 {object} models.ResponseModel{data=user_service.ListBranchResponse} "desc"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
@@ -67,17 +67,17 @@ func (h *handlerV1) GetAllBranch(c *gin.Context) {
 		return
 	}
 
-	resp, err := h.services.BranchService().List(
+	resp, err := h.services.Branch().List(
 		c.Request.Context(),
-		&branch_service.ListBranchRequest{
-			Limit:  int32(limit),
-			Offset: int32(offset),
-			Search: c.Query("search"),
+		&user_service.ListBranchRequest{
+			Limit: int32(limit),
+			Page:  int32(offset),
+			Name:  c.Query("search"),
 		},
 	)
 
 	if err != nil {
-		h.handleErrorResponse(c, http.StatusInternalServerError, "error getting all branchs", err)
+		h.handleErrorResponse(c, http.StatusInternalServerError, "error getting all users", err)
 		return
 	}
 
@@ -85,34 +85,34 @@ func (h *handlerV1) GetAllBranch(c *gin.Context) {
 }
 
 // Get-BranchByID godoc
-// @ID get-branch-byID
-// @Router /v1/branch/get/{branch_id} [GET]
-// @Summary get branch by ID
-// @Description get branch
-// @Tags branch
+// @ID get-user-byID
+// @Router /v1/user/get/{user_id} [GET]
+// @Summary get user by ID
+// @Description get user
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param branch_id path string true "branch_id"
-// @Success 200 {object} models.ResponseModel{data=branch_service.GetBranchResponse} "desc"
+// @Param user_id path string true "user_id"
+// @Success 200 {object} models.ResponseModel{data=user_service.GetBranchResponse} "desc"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) GetBranch(c *gin.Context) {
 
-	branch_id := c.Param("branch_id")
+	user_id := c.Param("user_id")
 
-	if !util.IsValidUUID(branch_id) {
-		h.handleErrorResponse(c, http.StatusBadRequest, "branch id is not valid", errors.New("branch id is not valid"))
+	if !util.IsValidUUID(user_id) {
+		h.handleErrorResponse(c, http.StatusBadRequest, "user id is not valid", errors.New("user id is not valid"))
 		return
 	}
 
-	resp, err := h.services.BranchService().Get(
+	resp, err := h.services.Branch().Get(
 		context.Background(),
-		&branch_service.IdRequest{
-			Id: branch_id,
+		&user_service.IdRequest{
+			Id: user_id,
 		},
 	)
-	if !handleError(h.log, c, err, "error while getting branch") {
+	if !handleError(h.log, c, err, "error while getting user") {
 		return
 	}
 
@@ -121,32 +121,32 @@ func (h *handlerV1) GetBranch(c *gin.Context) {
 }
 
 // Update Branch godoc
-// @ID update_branch
-// @Router /v1/branch/update/{branch_id} [PUT]
+// @ID update_user
+// @Router /v1/user/update/{user_id} [PUT]
 // @Summary Update Branch
 // @Description Update Branch by ID
-// @Tags branch
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param        branch_id       path    string     true    "Branch ID to update"
-// @Param branch body branch_service.CreateBranchRequest true "branch"
+// @Param        user_id       path    string     true    "Branch ID to update"
+// @Param user body user_service.CreateBranchRequest true "user"
 // @Success 200 {object} models.ResponseModel{data=models.Status} "desc"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) UpdateBranch(c *gin.Context) {
 
-	var branch = branch_service.UpdateBranchRequest{}
+	var user = user_service.UpdateBranchRequest{}
 
-	branch.Id = c.Param("branch_id")
-	err := c.ShouldBindJSON(&branch)
+	// user.Id = c.Param("user_id")
+	err := c.ShouldBindJSON(&user)
 	if err != nil {
 		h.handleErrorResponse(c, http.StatusBadRequest, "error while binding", err.Error())
 		return
 	}
 
-	resp, err := h.services.BranchService().Update(c.Request.Context(), &branch)
-	if !handleError(h.log, c, err, "error while getting branch") {
+	resp, err := h.services.Branch().Update(c.Request.Context(), &user)
+	if !handleError(h.log, c, err, "error while getting user") {
 		return
 	}
 
@@ -154,31 +154,31 @@ func (h *handlerV1) UpdateBranch(c *gin.Context) {
 }
 
 // / Delete Branch godoc
-// @ID delete-branch
-// @Router /v1/branch/delete/{branch_id} [DELETE]
-// @Summary delete branch
+// @ID delete-user
+// @Router /v1/user/delete/{user_id} [DELETE]
+// @Summary delete user
 // @Description Delete Branch
-// @Tags branch
+// @Tags user
 // @Accept json
 // @Produce json
-// @Param branch_id path string true "branch_id"
+// @Param user_id path string true "user_id"
 // @Success 200 {object} models.ResponseModel{data=models.Status} "desc"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) DeleteBranch(c *gin.Context) {
 
-	var id branch_service.IdRequest
-	id.Id = c.Param("branch_id")
+	var id user_service.IdRequest
+	id.Id = c.Param("user_id")
 
 	if !util.IsValidUUID(id.Id) {
-		h.handleErrorResponse(c, http.StatusBadRequest, "branch id is not valid", errors.New("branch id is not valid"))
+		h.handleErrorResponse(c, http.StatusBadRequest, "user id is not valid", errors.New("user id is not valid"))
 		return
 	}
 
-	resp, err := h.services.BranchService().Delete(c.Request.Context(), &id)
+	resp, err := h.services.Branch().Delete(c.Request.Context(), &id)
 	if err != nil {
-		h.handleErrorResponse(c, http.StatusBadRequest, "error while deleting branch", err.Error())
+		h.handleErrorResponse(c, http.StatusBadRequest, "error while deleting user", err.Error())
 		return
 	}
 
