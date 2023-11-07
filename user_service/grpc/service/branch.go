@@ -52,8 +52,7 @@ func (b *BranchService) List(ctx context.Context, req *user_service.ListBranchRe
 		return nil, err
 	}
 
-	return &user_service.ListBranchResponse{Branches: Branchs.Branches,
-		Count: Branchs.Count}, nil
+	return Branchs, nil
 }
 
 func (s *BranchService) Update(ctx context.Context, req *user_service.UpdateBranchRequest) (*user_service.Response, error) {

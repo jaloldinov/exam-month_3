@@ -4,7 +4,7 @@ protoc -I=../delivery_protos/user_service --go_out=genproto --go_opt=paths=sourc
                                           
 protoc -I=../delivery_protos/user_service --go_out=genproto --go_opt=paths=source_relative \
                                           --go-grpc_out=genproto --go-grpc_opt=paths=source_relative \
-                                          ../delivery_protos/user_service/user.proto
+                                          ../delivery_protos/user_service/branch.proto
 
 
 migrate create -ext sql -dir ./migrations -seq -digits 3 create_tables

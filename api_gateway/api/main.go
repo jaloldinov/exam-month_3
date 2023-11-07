@@ -60,11 +60,47 @@ func New(opt *RouterOptions) *gin.Engine {
 	apiV1.DELETE("/product/delete/:product_id", handlerV1.DeleteProduct)
 
 	// order
+	apiV1.PUT("/order/update/status/:order_id", handlerV1.UpdateOrderStatus)
 	apiV1.POST("/order/create", handlerV1.CreateOrder)
 	apiV1.GET("/order/list", handlerV1.GetAllOrder)
 	apiV1.GET("/order/get/:order_id", handlerV1.GetOrder)
 	apiV1.PUT("/order/update/:order_id", handlerV1.UpdateOrder)
 	apiV1.DELETE("/order/delete/:order_id", handlerV1.DeleteOrder)
+
+	// delivery_tarif
+	apiV1.POST("/delivery/create", handlerV1.CreateDeliveryTariff)
+	apiV1.GET("/delivery/list", handlerV1.GetAllDeliveryTariff)
+	apiV1.GET("/delivery/get/:delivery_id", handlerV1.GetDeliveryTariff)
+	apiV1.PUT("/delivery/update/:delivery_id", handlerV1.UpdateDeliveryTariff)
+	apiV1.DELETE("/delivery/delete/:delivery_id", handlerV1.DeleteDeliveryTariff)
+
+	// branch
+	apiV1.POST("/branch/create", handlerV1.CreateBranch)
+	apiV1.GET("/branch/list", handlerV1.GetAllBranch)
+	apiV1.GET("/branch/get/:branch_id", handlerV1.GetBranch)
+	apiV1.PUT("/branch/update/:branch_id", handlerV1.UpdateBranch)
+	apiV1.DELETE("/branch/delete/:branch_id", handlerV1.DeleteBranch)
+
+	// user
+	apiV1.POST("/user/create", handlerV1.CreateUser)
+	apiV1.GET("/user/list", handlerV1.GetListUser)
+	apiV1.GET("/user/get/:user_id", handlerV1.GetUser)
+	apiV1.PUT("/user/update/:user_id", handlerV1.UpdateUser)
+	apiV1.DELETE("/user/delete/:user_id", handlerV1.DeleteUser)
+
+	// client
+	apiV1.POST("/client/create", handlerV1.CreateClients)
+	apiV1.GET("/client/list", handlerV1.GetListClients)
+	apiV1.GET("/client/get/:client_id", handlerV1.GetClients)
+	apiV1.PUT("/client/update/:client_id", handlerV1.UpdateClients)
+	apiV1.DELETE("/client/delete/:client_id", handlerV1.DeleteClients)
+
+	// courier
+	apiV1.POST("/courier/create", handlerV1.CreateCourier)
+	apiV1.GET("/courier/list", handlerV1.GetListCourier)
+	apiV1.GET("/courier/get/:courier_id", handlerV1.GetCourier)
+	apiV1.PUT("/courier/update/:courier_id", handlerV1.UpdateCourier)
+	apiV1.DELETE("/courier/delete/:courier_id", handlerV1.DeleteCourier)
 
 	// swagger
 	url := ginSwagger.URL("swagger/doc.json") // The url pointing to API definition

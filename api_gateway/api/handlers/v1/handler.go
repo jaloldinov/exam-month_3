@@ -143,3 +143,25 @@ func ProtoToStruct(data interface{}, m protoreflect.ProtoMessage) error {
 	err = json.Unmarshal(js, data)
 	return err
 }
+
+type Response struct {
+	Status      int         `json:"status"`
+	Description string      `json:"description"`
+	Data        interface{} `json:"data"`
+}
+
+func (h *handlerV1) handlerResponse(c *gin.Context, path string, code int, message interface{}) {
+	response := Response{
+		Status: code,
+		Data:   message,
+	}
+
+	switch {
+	case code < 300:
+		h.log.Info(path, logger.Any("info", response))
+	case code >= 400:
+		h.log.Error(path, logger.Any("error", response))
+	}
+
+	c.JSON(code, response)
+}

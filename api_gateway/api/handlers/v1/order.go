@@ -10,6 +10,37 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UpdateStatus Order godoc
+// @ID update_order_status
+// @Router /v1/order/update/status/{order_id} [PUT]
+// @Summary Update Order STATUS
+// @Description Update status by ID and status type
+// @Tags order
+// @Accept json
+// @Produce json
+// @Param order body order_service.UpdateOrderStatusRequest true "order"
+// @Success 200 {object} models.ResponseModel{data=models.Status}
+// @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
+// @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
+// @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
+func (h *handlerV1) UpdateOrderStatus(c *gin.Context) {
+
+	var order = order_service.UpdateOrderStatusRequest{}
+
+	err := c.ShouldBindJSON(&order)
+	if err != nil {
+		h.handleErrorResponse(c, http.StatusBadRequest, "error while binding", err.Error())
+		return
+	}
+
+	resp, err := h.services.Order().UpdateStatus(c.Request.Context(), &order)
+	if !handleError(h.log, c, err, "error while getting order") {
+		return
+	}
+
+	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
+}
+
 // Order godoc
 // @ID create-order
 // @Router /v1/order/create [POST]
