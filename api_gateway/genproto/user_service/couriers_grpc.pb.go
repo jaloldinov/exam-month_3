@@ -27,6 +27,7 @@ type CourierServiceClient interface {
 	List(ctx context.Context, in *ListCouriersRequest, opts ...grpc.CallOption) (*ListCouriersResponse, error)
 	Update(ctx context.Context, in *UpdateCouriersRequest, opts ...grpc.CallOption) (*Response, error)
 	Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
+	GetByLogin(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Couriers, error)
 }
 
 type courierServiceClient struct {
@@ -82,6 +83,15 @@ func (c *courierServiceClient) Delete(ctx context.Context, in *IdRequest, opts .
 	return out, nil
 }
 
+func (c *courierServiceClient) GetByLogin(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Couriers, error) {
+	out := new(Couriers)
+	err := c.cc.Invoke(ctx, "/user_service.CourierService/GetByLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // CourierServiceServer is the server API for CourierService service.
 // All implementations must embed UnimplementedCourierServiceServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type CourierServiceServer interface {
 	List(context.Context, *ListCouriersRequest) (*ListCouriersResponse, error)
 	Update(context.Context, *UpdateCouriersRequest) (*Response, error)
 	Delete(context.Context, *IdRequest) (*Response, error)
+	GetByLogin(context.Context, *IdRequest) (*Couriers, error)
 	mustEmbedUnimplementedCourierServiceServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedCourierServiceServer) Update(context.Context, *UpdateCouriers
 }
 func (UnimplementedCourierServiceServer) Delete(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedCourierServiceServer) GetByLogin(context.Context, *IdRequest) (*Couriers, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByLogin not implemented")
 }
 func (UnimplementedCourierServiceServer) mustEmbedUnimplementedCourierServiceServer() {}
 
@@ -216,6 +230,24 @@ func _CourierService_Delete_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _CourierService_GetByLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CourierServiceServer).GetByLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.CourierService/GetByLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CourierServiceServer).GetByLogin(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // CourierService_ServiceDesc is the grpc.ServiceDesc for CourierService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var CourierService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _CourierService_Delete_Handler,
+		},
+		{
+			MethodName: "GetByLogin",
+			Handler:    _CourierService_GetByLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

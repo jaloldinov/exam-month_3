@@ -27,6 +27,7 @@ type UserServiceClient interface {
 	List(ctx context.Context, in *ListUsersRequest, opts ...grpc.CallOption) (*ListUsersResponse, error)
 	Update(ctx context.Context, in *UpdateUsersRequest, opts ...grpc.CallOption) (*Response, error)
 	Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
+	GetByLogin(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Users, error)
 }
 
 type userServiceClient struct {
@@ -82,6 +83,15 @@ func (c *userServiceClient) Delete(ctx context.Context, in *IdRequest, opts ...g
 	return out, nil
 }
 
+func (c *userServiceClient) GetByLogin(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Users, error) {
+	out := new(Users)
+	err := c.cc.Invoke(ctx, "/user_service.UserService/GetByLogin", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServiceServer is the server API for UserService service.
 // All implementations must embed UnimplementedUserServiceServer
 // for forward compatibility
@@ -91,6 +101,7 @@ type UserServiceServer interface {
 	List(context.Context, *ListUsersRequest) (*ListUsersResponse, error)
 	Update(context.Context, *UpdateUsersRequest) (*Response, error)
 	Delete(context.Context, *IdRequest) (*Response, error)
+	GetByLogin(context.Context, *IdRequest) (*Users, error)
 	mustEmbedUnimplementedUserServiceServer()
 }
 
@@ -112,6 +123,9 @@ func (UnimplementedUserServiceServer) Update(context.Context, *UpdateUsersReques
 }
 func (UnimplementedUserServiceServer) Delete(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedUserServiceServer) GetByLogin(context.Context, *IdRequest) (*Users, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetByLogin not implemented")
 }
 func (UnimplementedUserServiceServer) mustEmbedUnimplementedUserServiceServer() {}
 
@@ -216,6 +230,24 @@ func _UserService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetByLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetByLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/user_service.UserService/GetByLogin",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetByLogin(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserService_ServiceDesc is the grpc.ServiceDesc for UserService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -242,6 +274,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _UserService_Delete_Handler,
+		},
+		{
+			MethodName: "GetByLogin",
+			Handler:    _UserService_GetByLogin_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

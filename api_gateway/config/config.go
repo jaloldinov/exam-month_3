@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"time"
 
 	"github.com/spf13/cast"
 )
@@ -25,6 +26,11 @@ type Config struct {
 	LogLevel string
 	HttpPort string
 }
+
+const (
+	TokenExpireTime = 24 * time.Hour
+	JWTSecretKey    = "MySecretKey"
+)
 
 // Load loads environment vars and inflates Config
 func Load() Config {

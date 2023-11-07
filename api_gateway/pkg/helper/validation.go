@@ -15,6 +15,9 @@ const POOL = "abcdefghijklmnopqrstuwxvyzABcDEFGHIJKLMNOPQRSTUYVWXYZ"
 func GeneratePasswordHash(pass string) ([]byte, error) {
 	return bcrypt.GenerateFromPassword([]byte(pass), 10)
 }
+func ComparePasswords(hashedPass, pass []byte) error {
+	return bcrypt.CompareHashAndPassword(hashedPass, pass)
+}
 
 func ValidatePassword(password string) error {
 	if password == "" {
