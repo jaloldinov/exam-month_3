@@ -4,9 +4,9 @@
         "contact": {}
     },
     "paths": {
-        "/v1/branch/create": {
+        "/v1/category/create": {
             "post": {
-                "description": "create branch",
+                "description": "create category",
                 "consumes": [
                     "application/json"
                 ],
@@ -14,24 +14,24 @@
                     "application/json"
                 ],
                 "tags": [
-                    "branch"
+                    "category"
                 ],
-                "summary": "create branch",
-                "operationId": "create-branch",
+                "summary": "create category",
+                "operationId": "create-category",
                 "parameters": [
                     {
-                        "description": "branch",
-                        "name": "branch",
+                        "description": "category",
+                        "name": "category",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/branch_service.CreateBranchRequest"
+                            "$ref": "#/definitions/catalog_service.CreateCategoryRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "desc",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -41,7 +41,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/branch_service.Branch"
+                                            "$ref": "#/definitions/catalog_service.Response"
                                         }
                                     }
                                 }
@@ -87,9 +87,9 @@
                 }
             }
         },
-        "/v1/branch/delete/{branch_id}": {
+        "/v1/category/delete/{category_id}": {
             "delete": {
-                "description": "Delete Branch",
+                "description": "Delete Category",
                 "consumes": [
                     "application/json"
                 ],
@@ -97,22 +97,22 @@
                     "application/json"
                 ],
                 "tags": [
-                    "branch"
+                    "category"
                 ],
-                "summary": "delete branch",
-                "operationId": "delete-branch",
+                "summary": "delete category",
+                "operationId": "delete-category",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "branch_id",
-                        "name": "branch_id",
+                        "description": "category_id",
+                        "name": "category_id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "desc",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -168,9 +168,9 @@
                 }
             }
         },
-        "/v1/branch/get/{branch_id}": {
+        "/v1/category/get/{category_id}": {
             "get": {
-                "description": "get branch",
+                "description": "get category",
                 "consumes": [
                     "application/json"
                 ],
@@ -178,22 +178,22 @@
                     "application/json"
                 ],
                 "tags": [
-                    "branch"
+                    "category"
                 ],
-                "summary": "get branch by ID",
-                "operationId": "get-branch-byID",
+                "summary": "get category by ID",
+                "operationId": "get-category-byID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "branch_id",
-                        "name": "branch_id",
+                        "description": "category_id",
+                        "name": "category_id",
                         "in": "path",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "desc",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -203,7 +203,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/branch_service.GetBranchResponse"
+                                            "$ref": "#/definitions/catalog_service.Category"
                                         }
                                     }
                                 }
@@ -249,9 +249,9 @@
                 }
             }
         },
-        "/v1/branch/list": {
+        "/v1/category/list": {
             "get": {
-                "description": "get branch",
+                "description": "get category",
                 "consumes": [
                     "application/json"
                 ],
@@ -259,10 +259,10 @@
                     "application/json"
                 ],
                 "tags": [
-                    "branch"
+                    "category"
                 ],
-                "summary": "get branch all",
-                "operationId": "get-branch",
+                "summary": "get list category",
+                "operationId": "get-category",
                 "parameters": [
                     {
                         "type": "string",
@@ -278,8 +278,8 @@
                     },
                     {
                         "type": "integer",
-                        "description": "offset",
-                        "name": "offset",
+                        "description": "page",
+                        "name": "page",
                         "in": "query"
                     }
                 ],
@@ -295,7 +295,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/branch_service.ListBranchResponse"
+                                            "$ref": "#/definitions/catalog_service.ListCategoryResponse"
                                         }
                                     }
                                 }
@@ -341,9 +341,9 @@
                 }
             }
         },
-        "/v1/branch/update/{branch_id}": {
+        "/v1/category/update/{category_id}": {
             "put": {
-                "description": "Update Branch by ID",
+                "description": "Update Category by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -351,31 +351,24 @@
                     "application/json"
                 ],
                 "tags": [
-                    "branch"
+                    "category"
                 ],
-                "summary": "Update Branch",
-                "operationId": "update_branch",
+                "summary": "Update Category",
+                "operationId": "update_category",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Branch ID to update",
-                        "name": "branch_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "branch",
-                        "name": "branch",
+                        "description": "category",
+                        "name": "category",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/branch_service.CreateBranchRequest"
+                            "$ref": "#/definitions/catalog_service.UpdateCategoryRequest"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "desc",
+                        "description": "OK",
                         "schema": {
                             "allOf": [
                                 {
@@ -433,65 +426,91 @@
         }
     },
     "definitions": {
-        "branch_service.Branch": {
+        "catalog_service.Category": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string"
+                "active": {
+                    "type": "boolean"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "founded_at": {
+                "id": {
                     "type": "integer"
                 },
-                "id": {
+                "image": {
                     "type": "string"
                 },
-                "name": {
+                "order_number": {
+                    "type": "integer"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "title": {
                     "type": "string"
                 },
                 "updated_at": {
                     "type": "string"
-                },
-                "year": {
-                    "type": "integer"
                 }
             }
         },
-        "branch_service.CreateBranchRequest": {
+        "catalog_service.CreateCategoryRequest": {
             "type": "object",
             "properties": {
-                "address": {
+                "image": {
                     "type": "string"
                 },
-                "founded_at": {
+                "order_number": {
                     "type": "integer"
                 },
-                "name": {
+                "parent_id": {
+                    "type": "integer"
+                },
+                "title": {
                     "type": "string"
                 }
             }
         },
-        "branch_service.GetBranchResponse": {
+        "catalog_service.ListCategoryResponse": {
             "type": "object",
             "properties": {
-                "branch": {
-                    "$ref": "#/definitions/branch_service.Branch"
-                }
-            }
-        },
-        "branch_service.ListBranchResponse": {
-            "type": "object",
-            "properties": {
-                "branches": {
+                "categories": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/branch_service.Branch"
+                        "$ref": "#/definitions/catalog_service.Category"
                     }
                 },
                 "count": {
                     "type": "integer"
+                }
+            }
+        },
+        "catalog_service.Response": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "catalog_service.UpdateCategoryRequest": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "image": {
+                    "type": "string"
+                },
+                "order_number": {
+                    "type": "string"
+                },
+                "parent_id": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
                 }
             }
         },

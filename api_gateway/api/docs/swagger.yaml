@@ -1,43 +1,60 @@
 definitions:
-  branch_service.Branch:
+  catalog_service.Category:
     properties:
-      address:
-        type: string
+      active:
+        type: boolean
       created_at:
         type: string
-      founded_at:
-        type: integer
       id:
+        type: integer
+      image:
         type: string
-      name:
+      order_number:
+        type: integer
+      parent_id:
+        type: integer
+      title:
         type: string
       updated_at:
         type: string
-      year:
-        type: integer
     type: object
-  branch_service.CreateBranchRequest:
+  catalog_service.CreateCategoryRequest:
     properties:
-      address:
+      image:
         type: string
-      founded_at:
+      order_number:
         type: integer
-      name:
+      parent_id:
+        type: integer
+      title:
         type: string
     type: object
-  branch_service.GetBranchResponse:
+  catalog_service.ListCategoryResponse:
     properties:
-      branch:
-        $ref: '#/definitions/branch_service.Branch'
-    type: object
-  branch_service.ListBranchResponse:
-    properties:
-      branches:
+      categories:
         items:
-          $ref: '#/definitions/branch_service.Branch'
+          $ref: '#/definitions/catalog_service.Category'
         type: array
       count:
         type: integer
+    type: object
+  catalog_service.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  catalog_service.UpdateCategoryRequest:
+    properties:
+      id:
+        type: integer
+      image:
+        type: string
+      order_number:
+        type: string
+      parent_id:
+        type: integer
+      title:
+        type: string
     type: object
   models.ResponseModel:
     properties:
@@ -56,30 +73,30 @@ definitions:
 info:
   contact: {}
 paths:
-  /v1/branch/create:
+  /v1/category/create:
     post:
       consumes:
       - application/json
-      description: create branch
-      operationId: create-branch
+      description: create category
+      operationId: create-category
       parameters:
-      - description: branch
+      - description: category
         in: body
-        name: branch
+        name: category
         required: true
         schema:
-          $ref: '#/definitions/branch_service.CreateBranchRequest'
+          $ref: '#/definitions/catalog_service.CreateCategoryRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: desc
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/models.ResponseModel'
             - properties:
                 data:
-                  $ref: '#/definitions/branch_service.Branch'
+                  $ref: '#/definitions/catalog_service.Response'
               type: object
         "400":
           description: Bad Request
@@ -99,26 +116,26 @@ paths:
                 error:
                   type: string
               type: object
-      summary: create branch
+      summary: create category
       tags:
-      - branch
-  /v1/branch/delete/{branch_id}:
+      - category
+  /v1/category/delete/{category_id}:
     delete:
       consumes:
       - application/json
-      description: Delete Branch
-      operationId: delete-branch
+      description: Delete Category
+      operationId: delete-category
       parameters:
-      - description: branch_id
+      - description: category_id
         in: path
-        name: branch_id
+        name: category_id
         required: true
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: desc
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/models.ResponseModel'
@@ -144,32 +161,32 @@ paths:
                 error:
                   type: string
               type: object
-      summary: delete branch
+      summary: delete category
       tags:
-      - branch
-  /v1/branch/get/{branch_id}:
+      - category
+  /v1/category/get/{category_id}:
     get:
       consumes:
       - application/json
-      description: get branch
-      operationId: get-branch-byID
+      description: get category
+      operationId: get-category-byID
       parameters:
-      - description: branch_id
+      - description: category_id
         in: path
-        name: branch_id
+        name: category_id
         required: true
         type: string
       produces:
       - application/json
       responses:
         "200":
-          description: desc
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/models.ResponseModel'
             - properties:
                 data:
-                  $ref: '#/definitions/branch_service.GetBranchResponse'
+                  $ref: '#/definitions/catalog_service.Category'
               type: object
         "400":
           description: Bad Request
@@ -189,15 +206,15 @@ paths:
                 error:
                   type: string
               type: object
-      summary: get branch by ID
+      summary: get category by ID
       tags:
-      - branch
-  /v1/branch/list:
+      - category
+  /v1/category/list:
     get:
       consumes:
       - application/json
-      description: get branch
-      operationId: get-branch
+      description: get category
+      operationId: get-category
       parameters:
       - description: search
         in: query
@@ -207,9 +224,9 @@ paths:
         in: query
         name: limit
         type: integer
-      - description: offset
+      - description: page
         in: query
-        name: offset
+        name: page
         type: integer
       produces:
       - application/json
@@ -221,7 +238,7 @@ paths:
             - $ref: '#/definitions/models.ResponseModel'
             - properties:
                 data:
-                  $ref: '#/definitions/branch_service.ListBranchResponse'
+                  $ref: '#/definitions/catalog_service.ListCategoryResponse'
               type: object
         "400":
           description: Bad Request
@@ -241,32 +258,27 @@ paths:
                 error:
                   type: string
               type: object
-      summary: get branch all
+      summary: get list category
       tags:
-      - branch
-  /v1/branch/update/{branch_id}:
+      - category
+  /v1/category/update/{category_id}:
     put:
       consumes:
       - application/json
-      description: Update Branch by ID
-      operationId: update_branch
+      description: Update Category by ID
+      operationId: update_category
       parameters:
-      - description: Branch ID to update
-        in: path
-        name: branch_id
-        required: true
-        type: string
-      - description: branch
+      - description: category
         in: body
-        name: branch
+        name: category
         required: true
         schema:
-          $ref: '#/definitions/branch_service.CreateBranchRequest'
+          $ref: '#/definitions/catalog_service.UpdateCategoryRequest'
       produces:
       - application/json
       responses:
         "200":
-          description: desc
+          description: OK
           schema:
             allOf:
             - $ref: '#/definitions/models.ResponseModel'
@@ -292,9 +304,9 @@ paths:
                 error:
                   type: string
               type: object
-      summary: Update Branch
+      summary: Update Category
       tags:
-      - branch
+      - category
 securityDefinitions:
   ApiKeyAuth:
     in: header
