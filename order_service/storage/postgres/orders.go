@@ -21,6 +21,7 @@ func NewOrder(db *pgxpool.Pool) *orderRepo {
 		db: db,
 	}
 }
+
 func (b *orderRepo) UpdateStatus(c context.Context, req *order_service.UpdateOrderStatusRequest) (string, error) {
 	// Get the previous status
 	prevStatus, err := b.GetOrderStatus(c, int(req.Id), req.OrderId)

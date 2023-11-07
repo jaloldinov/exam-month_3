@@ -47,8 +47,7 @@ func (b *ProductService) List(ctx context.Context, req *catalog_service.ListProd
 		return nil, err
 	}
 
-	return &catalog_service.ListProductResponse{Products: Products.Products,
-		Count: Products.Count}, nil
+	return Products, nil
 }
 
 func (s *ProductService) Update(ctx context.Context, req *catalog_service.UpdateProductRequest) (*catalog_service.Response, error) {

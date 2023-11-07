@@ -42,13 +42,12 @@ func (b *CategoryService) Get(ctx context.Context, req *catalog_service.IdReques
 }
 
 func (b *CategoryService) List(ctx context.Context, req *catalog_service.ListCategoryRequest) (*catalog_service.ListCategoryResponse, error) {
-	Categorys, err := b.storage.Category().GetList(context.Background(), req)
+	resp, err := b.storage.Category().GetList(context.Background(), req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &catalog_service.ListCategoryResponse{Categories: Categorys.Categories,
-		Count: Categorys.Count}, nil
+	return resp, nil
 }
 
 func (s *CategoryService) Update(ctx context.Context, req *catalog_service.UpdateCategoryRequest) (*catalog_service.Response, error) {

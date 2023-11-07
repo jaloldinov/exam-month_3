@@ -42,10 +42,10 @@ func (b *categoryRepo) Create(c context.Context, req *catalog_service.CreateCate
 			req.OrderNumber,
 		).Scan(&id)
 		if err != nil {
-			return "", fmt.Errorf("failed to create category: %w", err)
+			return "", fmt.Errorf("failed to create parent category: %w", err)
 		}
 
-		return fmt.Sprintf("created with ID: %d", id), nil
+		return fmt.Sprintf("created parent category with ID: %d", id), nil
 		// 		CREATE PARENT CATEGORY
 	} else {
 		query := `
@@ -67,7 +67,7 @@ func (b *categoryRepo) Create(c context.Context, req *catalog_service.CreateCate
 			return "", fmt.Errorf("failed to create category: %w", err)
 		}
 
-		return fmt.Sprintf("created parent category with ID: %d", id), nil
+		return fmt.Sprintf("created category with ID: %d", id), nil
 	}
 
 }
