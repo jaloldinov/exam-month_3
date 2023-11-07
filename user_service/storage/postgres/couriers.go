@@ -290,3 +290,56 @@ func (b *courierRepo) Delete(c context.Context, req *user_service.IdRequest) (re
 
 	return "deleted", nil
 }
+
+func (b *courierRepo) GetByLogin(c context.Context, req *user_service.IdRequest) (resp *user_service.Couriers, err error) {
+	var (
+		createdAt sql.NullString
+		updatedAt sql.NullString
+	)
+	query := `
+    SELECT 
+		id,
+		first_name,
+		last_name,
+		branch_id,  
+		phone,
+		login,
+		active,
+		password,
+		max_order_count,
+		created_at,
+		updated_at 
+    FROM couriers 
+    WHERE login = $1 AND "active" AND "deleted_at" IS NULL;`
+
+	courier := user_service.Couriers{}
+
+	err = b.db.QueryRow(c, query, req.Id).Scan(
+		&courier.Id,
+		&courier.Firstname,
+		&courier.Lastname,
+		&courier.BranchId,
+		&courier.Phone,
+		&courier.Login,
+		&courier.Active,
+		&courier.Password,
+		&courier.MaxOrderCount,
+		&createdAt,
+		&updatedAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("courier not found")
+		}
+		return nil, fmt.Errorf("failed to get courier: %w", err)
+	}
+	if createdAt.Valid {
+		courier.CreatedAt = createdAt.String
+	}
+
+	if updatedAt.Valid {
+		courier.UpdatedAt = updatedAt.String
+	}
+
+	return &courier, nil
+}

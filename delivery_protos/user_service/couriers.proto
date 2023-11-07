@@ -10,6 +10,8 @@ service CourierService {
     rpc List(ListCouriersRequest) returns (ListCouriersResponse) {}
     rpc Update(UpdateCouriersRequest) returns (Response) {}
     rpc Delete(IdRequest) returns (Response) {}
+
+    rpc GetByLogin(IdRequest) returns (Couriers) {}
 }
 
 message CreateCouriersRequest {

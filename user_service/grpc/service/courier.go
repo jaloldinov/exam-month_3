@@ -72,3 +72,12 @@ func (s *CourierService) Delete(ctx context.Context, req *user_service.IdRequest
 
 	return &user_service.Response{Message: resp}, nil
 }
+
+func (b *CourierService) GetByLogin(ctx context.Context, req *user_service.IdRequest) (resp *user_service.Couriers, err error) {
+	resp, err = b.storage.Couriers().GetByLogin(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return resp, nil
+}

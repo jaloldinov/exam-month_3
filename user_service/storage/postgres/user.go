@@ -284,3 +284,54 @@ func (b *userRepo) Delete(c context.Context, req *user_service.IdRequest) (resp 
 
 	return "deleted", nil
 }
+
+func (b *userRepo) GetByLogin(c context.Context, req *user_service.IdRequest) (resp *user_service.Users, err error) {
+	var (
+		createdAt sql.NullString
+		updatedAt sql.NullString
+	)
+	query := `
+    SELECT 
+		id,
+		first_name,
+		last_name,
+		branch_id,  
+		phone,
+		login,
+		active,
+		password,
+		created_at,
+		updated_at 
+    FROM users 
+    WHERE login = $1 AND "active" AND "deleted_at" IS NULL;`
+
+	user := user_service.Users{}
+
+	err = b.db.QueryRow(c, query, req.Id).Scan(
+		&user.Id,
+		&user.Firstname,
+		&user.Lastname,
+		&user.BranchId,
+		&user.Phone,
+		&user.Login,
+		&user.Active,
+		&user.Password,
+		&createdAt,
+		&updatedAt,
+	)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, fmt.Errorf("user not found")
+		}
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	if createdAt.Valid {
+		user.CreatedAt = createdAt.String
+	}
+
+	if updatedAt.Valid {
+		user.UpdatedAt = updatedAt.String
+	}
+
+	return &user, nil
+}

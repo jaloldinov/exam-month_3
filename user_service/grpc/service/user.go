@@ -73,3 +73,11 @@ func (s *UserService) Delete(ctx context.Context, req *user_service.IdRequest) (
 
 	return &user_service.Response{Message: resp}, nil
 }
+
+func (b *UserService) GetByLogin(ctx context.Context, req *user_service.IdRequest) (*user_service.Users, error) {
+	reso, err := b.storage.Users().GetByLogin(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+	return reso, nil
+}

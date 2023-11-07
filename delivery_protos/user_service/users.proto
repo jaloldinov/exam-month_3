@@ -10,6 +10,8 @@ service UserService {
     rpc List(ListUsersRequest) returns (ListUsersResponse) {}
     rpc Update(UpdateUsersRequest) returns (Response) {}
     rpc Delete(IdRequest) returns (Response) {}
+
+    rpc GetByLogin(IdRequest) returns (Users) {}
 }
 
 message CreateUsersRequest {
