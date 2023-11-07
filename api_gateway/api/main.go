@@ -52,6 +52,20 @@ func New(opt *RouterOptions) *gin.Engine {
 	apiV1.PUT("/category/update/:category_id", handlerV1.UpdateCategory)
 	apiV1.DELETE("/category/delete/:category_id", handlerV1.DeleteCategory)
 
+	// product
+	apiV1.POST("/product/create", handlerV1.CreateProduct)
+	apiV1.GET("/product/list", handlerV1.GetAllProduct)
+	apiV1.GET("/product/get/:product_id", handlerV1.GetProduct)
+	apiV1.PUT("/product/update/:product_id", handlerV1.UpdateProduct)
+	apiV1.DELETE("/product/delete/:product_id", handlerV1.DeleteProduct)
+
+	// order
+	apiV1.POST("/order/create", handlerV1.CreateOrder)
+	apiV1.GET("/order/list", handlerV1.GetAllOrder)
+	apiV1.GET("/order/get/:order_id", handlerV1.GetOrder)
+	apiV1.PUT("/order/update/:order_id", handlerV1.UpdateOrder)
+	apiV1.DELETE("/order/delete/:order_id", handlerV1.DeleteOrder)
+
 	// swagger
 	url := ginSwagger.URL("swagger/doc.json") // The url pointing to API definition
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

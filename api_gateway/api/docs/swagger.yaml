@@ -29,6 +29,23 @@ definitions:
       title:
         type: string
     type: object
+  catalog_service.CreateProductRequest:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      order_number:
+        type: integer
+      photo:
+        type: string
+      price:
+        type: number
+      product_type:
+        type: string
+      title:
+        type: string
+    type: object
   catalog_service.ListCategoryResponse:
     properties:
       categories:
@@ -37,6 +54,40 @@ definitions:
         type: array
       count:
         type: integer
+    type: object
+  catalog_service.ListProductResponse:
+    properties:
+      Products:
+        items:
+          $ref: '#/definitions/catalog_service.Product'
+        type: array
+      count:
+        type: integer
+    type: object
+  catalog_service.Product:
+    properties:
+      active:
+        type: boolean
+      category_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      order_number:
+        type: integer
+      photo:
+        type: string
+      price:
+        type: number
+      product_type:
+        type: string
+      title:
+        type: string
+      updated_at:
+        type: string
     type: object
   catalog_service.Response:
     properties:
@@ -56,6 +107,25 @@ definitions:
       title:
         type: string
     type: object
+  catalog_service.UpdateProductRequest:
+    properties:
+      category_id:
+        type: integer
+      description:
+        type: string
+      id:
+        type: integer
+      order_number:
+        type: integer
+      photo:
+        type: string
+      price:
+        type: number
+      product_type:
+        type: string
+      title:
+        type: string
+    type: object
   models.ResponseModel:
     properties:
       code:
@@ -68,6 +138,105 @@ definitions:
   models.Status:
     properties:
       status:
+        type: string
+    type: object
+  order_service.CreateOrderRequest:
+    properties:
+      address:
+        type: string
+      branch_id:
+        type: integer
+      client_id:
+        type: integer
+      courier_id:
+        type: integer
+      delivery_price:
+        type: number
+      discount:
+        type: number
+      payment_type:
+        description: '''cash'',''card'''
+        type: string
+      price:
+        type: number
+      type:
+        description: delivery, pick-up
+        type: string
+    type: object
+  order_service.ListOrderResponse:
+    properties:
+      Orders:
+        items:
+          $ref: '#/definitions/order_service.Order'
+        type: array
+      count:
+        type: integer
+    type: object
+  order_service.Order:
+    properties:
+      address:
+        type: string
+      branch_id:
+        type: integer
+      client_id:
+        type: integer
+      courier_id:
+        type: integer
+      created_at:
+        type: string
+      delivery_price:
+        type: number
+      discount:
+        type: number
+      id:
+        type: integer
+      order_id:
+        type: string
+      payment_type:
+        description: '''cash'',''card'''
+        type: string
+      price:
+        type: number
+      status:
+        type: string
+      type:
+        description: delivery, pick-up
+        type: string
+      updated_at:
+        type: string
+    type: object
+  order_service.Response:
+    properties:
+      message:
+        type: string
+    type: object
+  order_service.UpdateOrderRequest:
+    properties:
+      address:
+        type: string
+      branch_id:
+        type: integer
+      client_id:
+        type: integer
+      courier_id:
+        type: integer
+      delivery_price:
+        type: number
+      discount:
+        type: number
+      id:
+        type: integer
+      order_id:
+        type: string
+      payment_type:
+        description: '''cash'',''card'''
+        type: string
+      price:
+        type: number
+      status:
+        type: string
+      type:
+        description: delivery, pick-up
         type: string
     type: object
 info:
@@ -307,6 +476,518 @@ paths:
       summary: Update Category
       tags:
       - category
+  /v1/order/create:
+    post:
+      consumes:
+      - application/json
+      description: create order
+      operationId: create-order
+      parameters:
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/order_service.CreateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/order_service.Response'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: create order
+      tags:
+      - order
+  /v1/order/delete/{order_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Order
+      operationId: delete-order
+      parameters:
+      - description: order_id
+        in: path
+        name: order_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Status'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: delete order
+      tags:
+      - order
+  /v1/order/get/{order_id}:
+    get:
+      consumes:
+      - application/json
+      description: get order
+      operationId: get-order-byID
+      parameters:
+      - description: order_id
+        in: path
+        name: order_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/order_service.Order'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: get order by ID
+      tags:
+      - order
+  /v1/order/list:
+    get:
+      consumes:
+      - application/json
+      description: get order
+      operationId: get-order
+      parameters:
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: order_id
+        in: query
+        name: order_id
+        type: integer
+      - description: client_id
+        in: query
+        name: client_id
+        type: integer
+      - description: branch_id
+        in: query
+        name: branch_id
+        type: integer
+      - description: delivery_type
+        in: query
+        name: delivery_type
+        type: string
+      - description: courier_id
+        in: query
+        name: courier_id
+        type: integer
+      - description: price_from
+        in: query
+        name: price_from
+        type: integer
+      - description: price_to
+        in: query
+        name: price_to
+        type: integer
+      - description: payment_type
+        in: query
+        name: payment_type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/order_service.ListOrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: get list order
+      tags:
+      - order
+  /v1/order/update/{order_id}:
+    put:
+      consumes:
+      - application/json
+      description: Update Order by ID
+      operationId: update_order
+      parameters:
+      - description: order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/order_service.UpdateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Status'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Update Order
+      tags:
+      - order
+  /v1/product/create:
+    post:
+      consumes:
+      - application/json
+      description: create product
+      operationId: create-product
+      parameters:
+      - description: product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/catalog_service.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/catalog_service.Response'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: create product
+      tags:
+      - product
+  /v1/product/delete/{product_id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Product
+      operationId: delete-product
+      parameters:
+      - description: product_id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Status'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: delete product
+      tags:
+      - product
+  /v1/product/get/{product_id}:
+    get:
+      consumes:
+      - application/json
+      description: get product
+      operationId: get-product-byID
+      parameters:
+      - description: product_id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/catalog_service.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: get product by ID
+      tags:
+      - product
+  /v1/product/list:
+    get:
+      consumes:
+      - application/json
+      description: get product
+      operationId: get-product
+      parameters:
+      - description: search
+        in: query
+        name: search
+        type: string
+      - description: limit
+        in: query
+        name: limit
+        type: integer
+      - description: page
+        in: query
+        name: page
+        type: integer
+      - description: type
+        in: query
+        name: type
+        type: integer
+      - description: category_id
+        in: query
+        name: category_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/catalog_service.ListProductResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: get list product
+      tags:
+      - product
+  /v1/product/update/{product_id}:
+    put:
+      consumes:
+      - application/json
+      description: Update Product by ID
+      operationId: update_product
+      parameters:
+      - description: product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/catalog_service.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Status'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Update Product
+      tags:
+      - product
 securityDefinitions:
   ApiKeyAuth:
     in: header

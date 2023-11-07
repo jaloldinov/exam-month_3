@@ -2,6 +2,7 @@ package v1
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	catalog_service "api_gateway/genproto/catalog_service"
@@ -57,11 +58,13 @@ func (h *handlerV1) CreateCategory(c *gin.Context) {
 func (h *handlerV1) GetAllCategory(c *gin.Context) {
 	limit, err := h.ParseQueryParam(c, "limit", "10")
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
-	page, err := h.ParseQueryParam(c, "page", "0")
+	page, err := h.ParseQueryParam(c, "page", "1")
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -105,6 +108,7 @@ func (h *handlerV1) GetCategory(c *gin.Context) {
 			Id: category_id,
 		},
 	)
+
 	if !handleError(h.log, c, err, "error get category by id") {
 		return
 	}
