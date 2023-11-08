@@ -150,7 +150,7 @@ func (h *handlerV1) UpdateDeliveryTariff(c *gin.Context) {
 	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
 }
 
-// / Delete DeliveryTariff godoc
+// Delete DeliveryTariff godoc
 // @ID delete-delivery
 // @Router /v1/delivery/delete/{delivery_id} [DELETE]
 // @Summary delete delivery

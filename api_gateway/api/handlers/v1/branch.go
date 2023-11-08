@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	user_service "api_gateway/genproto/user_service"
+	"api_gateway/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -179,4 +181,49 @@ func (h *handlerV1) DeleteBranch(c *gin.Context) {
 	}
 
 	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
+}
+
+// @Router       /get-branches [get]
+// @Summary      List Branch
+// @Description  get Branch
+// @Tags         GET_BRANCH
+// @Accept       json
+// @Produce      json
+// @Param        limit    query     integer  true  "limit for response"  Default(10)
+// @Param        page    query     integer  true  "page of req"  Default(1)
+// @Success      200  {array}   models.Branch
+// @Failure      400  {object}  response.ErrorResp
+// @Failure      404  {object}  response.ErrorResp
+// @Failure      500  {object}  response.ErrorResp
+func (h *handlerV1) GetListActiveBranch(c *gin.Context) {
+
+	limit, err := h.ParseQueryParam(c, "limit", "10")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	page, err := h.ParseQueryParam(c, "page", "1")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	timeNow := time.Now().Format("15:04:05")
+
+	fmt.Println(timeNow)
+
+	resp, err := h.services.Branch().GetListActiveBranch(c.Request.Context(), &user_service.GetListActiveBranchRequest{
+		Page:  int64(page),
+		Limit: int64(limit),
+		Date:  timeNow,
+	})
+
+	if err != nil {
+		h.log.Error("error Branch Active GetAll:", logger.Error(err))
+		c.JSON(http.StatusInternalServerError, "internal server error")
+		return
+	}
+	h.log.Warn("response to GetAllBranch")
+	c.JSON(http.StatusOK, resp)
 }

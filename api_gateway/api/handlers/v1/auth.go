@@ -114,10 +114,35 @@ func (h *handlerV1) SignIn(c *gin.Context) {
 		return
 
 	} else {
-		fmt.Println("Role undefined")
+		fmt.Println("role not found ")
 		res := models.ErrorResp{Code: "INVALID Role", Message: "invalid role"}
 		c.JSON(http.StatusBadRequest, res)
 		return
 	}
 
+}
+
+type ChangePasswordReq struct {
+	Email string `json:"email"`
+	Role  string `json:"role"`
+}
+
+func (h *handlerV1) ChangePassword(ctx *gin.Context) {
+	var req ChangePasswordReq
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		h.log.Error("error while binding:", logger.Error(err))
+		h.handlerResponse(ctx, "ShouldBindJSON()", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if req.Role == "user" {
+		res, err := helper.SendMail(req.Email, fmt.Sprintf("Your verification code: "+helper.GenerateCode()))
+		if err != nil {
+			h.log.Error("error while send email", logger.Error(err))
+			h.handlerResponse(ctx, "SendMail()", http.StatusBadRequest, err.Error())
+			return
+		}
+
+		ctx.JSON(http.StatusOK, res)
+	}
 }

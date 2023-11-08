@@ -69,15 +69,15 @@ func (h *handlerV1) CreateCourier(ctx *gin.Context) {
 // @Failure      404  {object}  Response{data=string}
 // @Failure      500  {object}  Response{data=string}
 func (h *handlerV1) GetListCourier(ctx *gin.Context) {
-	page, err := strconv.Atoi(ctx.DefaultQuery("page", "1"))
+	limit, err := h.ParseQueryParam(ctx, "limit", "10")
 	if err != nil {
-		h.handlerResponse(ctx, "error get page", http.StatusBadRequest, err.Error())
+		fmt.Println(err)
 		return
 	}
 
-	limit, err := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
+	page, err := h.ParseQueryParam(ctx, "page", "1")
 	if err != nil {
-		h.handlerResponse(ctx, "error get limit", http.StatusBadRequest, err.Error())
+		fmt.Println(err)
 		return
 	}
 
