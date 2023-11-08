@@ -211,12 +211,10 @@ func (h *handlerV1) GetListActiveBranch(c *gin.Context) {
 
 	timeNow := time.Now().Format("15:04:05")
 
-	fmt.Println(timeNow)
-
-	resp, err := h.services.Branch().GetListActiveBranch(c.Request.Context(), &user_service.GetListActiveBranchRequest{
-		Page:  int64(page),
-		Limit: int64(limit),
-		Date:  timeNow,
+	resp, err := h.services.Branch().ListActive(c.Request.Context(), &user_service.ListBranchActiveRequest{
+		Page:  int32(page),
+		Limit: int32(limit),
+		Time:  timeNow,
 	})
 
 	if err != nil {

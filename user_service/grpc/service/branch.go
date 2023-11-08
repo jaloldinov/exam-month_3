@@ -55,6 +55,15 @@ func (b *BranchService) List(ctx context.Context, req *user_service.ListBranchRe
 	return Branchs, nil
 }
 
+func (b *BranchService) GetListActive(ctx context.Context, req *user_service.ListBranchActiveRequest) (*user_service.ListBranchResponse, error) {
+	Branchs, err := b.storage.Branch().GetListActive(context.Background(), req)
+	if err != nil {
+		return nil, err
+	}
+
+	return Branchs, nil
+}
+
 func (s *BranchService) Update(ctx context.Context, req *user_service.UpdateBranchRequest) (*user_service.Response, error) {
 	resp, err := s.storage.Branch().Update(context.Background(), req)
 	if err != nil {

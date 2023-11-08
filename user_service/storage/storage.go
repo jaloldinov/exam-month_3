@@ -18,6 +18,8 @@ type BranchI interface {
 	GetList(context.Context, *pb.ListBranchRequest) (*pb.ListBranchResponse, error)
 	Update(context.Context, *pb.UpdateBranchRequest) (string, error)
 	Delete(context.Context, *pb.IdRequest) (string, error)
+
+	GetListActive(context.Context, *pb.ListBranchActiveRequest) (*pb.ListBranchResponse, error)
 }
 
 type UsersI interface {
