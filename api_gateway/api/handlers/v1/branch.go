@@ -183,7 +183,7 @@ func (h *handlerV1) DeleteBranch(c *gin.Context) {
 	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
 }
 
-// @Router       /get-branches [get]
+// @Router       /v1/branch/list/active [get]
 // @Summary      List Branch
 // @Description  get Branch
 // @Tags         GET_BRANCH
@@ -218,10 +218,9 @@ func (h *handlerV1) GetListActiveBranch(c *gin.Context) {
 	})
 
 	if err != nil {
-		h.log.Error("error Branch Active GetAll:", logger.Error(err))
+		h.log.Error("error getting active branchs:", logger.Error(err))
 		c.JSON(http.StatusInternalServerError, "internal server error")
 		return
 	}
-	h.log.Warn("response to GetAllBranch")
-	c.JSON(http.StatusOK, resp)
+	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
 }

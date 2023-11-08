@@ -34,7 +34,7 @@ func (b *branchRepo) GetListActive(c context.Context, req *user_service.ListBran
 	)
 
 	if req.Time != "" {
-		filter += " AND :time BETWEEN work_hour_start::text AND work_hout_end::text "
+		filter += " AND :time BETWEEN work_hour_start AND work_hout_end "
 		params["time"] = req.Time
 	}
 

@@ -50,7 +50,7 @@ func (h *handlerV1) GetListActiveOrders(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
 }
 
 // @Router       /v1/courier/delete-order/{id} [PUT]
@@ -70,8 +70,9 @@ func (h *handlerV1) DeleteCourierInOrder(c *gin.Context) {
 	respOrder, err := h.services.Order().Get(c.Request.Context(), &order_service.IdRequest{Id: id})
 
 	if err != nil {
-		fmt.Println("error Order Get:", err.Error())
+		fmt.Println("error while getting order:", err.Error())
 		c.JSON(http.StatusInternalServerError, "internal server error")
+
 		return
 	}
 	ids, _ := strconv.Atoi(id)
@@ -91,12 +92,13 @@ func (h *handlerV1) DeleteCourierInOrder(c *gin.Context) {
 	})
 
 	if err != nil {
-		fmt.Println("error Order Update:", err.Error())
+		fmt.Println("error updating order:", err.Error())
 		c.JSON(http.StatusInternalServerError, "internal server error")
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
+
 }
 
 // @Router       /v1/courier/get-order/{id} [put]
@@ -176,6 +178,6 @@ func (h *handlerV1) CourierGetOrder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)
 
 }

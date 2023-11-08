@@ -85,6 +85,8 @@ func New(opt *RouterOptions) *gin.Engine {
 	apiV1.PUT("/branch/update/:branch_id", handlerV1.UpdateBranch)
 	apiV1.DELETE("/branch/delete/:branch_id", handlerV1.DeleteBranch)
 
+	apiV1.GET("/branch/list/active", handlerV1.GetListActiveBranch)
+
 	// user
 	apiV1.POST("/user/create", handlerV1.CreateUser)
 	apiV1.GET("/user/list", handlerV1.GetListUser)
