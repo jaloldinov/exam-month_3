@@ -15,6 +15,94 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/auth/sign-in": {
+            "post": {
+                "description": "api for  auth",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "auth"
+                ],
+                "summary": "sign in",
+                "parameters": [
+                    {
+                        "description": "data of person",
+                        "name": "person",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.LoginRes"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/v1/branch/create": {
             "post": {
                 "description": "create branch",
@@ -875,7 +963,7 @@ const docTemplate = `{
         },
         "/v1/client/create": {
             "post": {
-                "description": "Create a new client with the provided details",
+                "description": "Create a new client with the provclient_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -961,9 +1049,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/client/delete/{id}": {
+        "/v1/client/delete/{client_id}": {
             "delete": {
-                "description": "delete a client by its unique identifier",
+                "description": "delete a client by its unique client_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -978,7 +1066,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Catgeory ID to retrieve",
-                        "name": "id",
+                        "name": "client_id",
                         "in": "path",
                         "required": true
                     }
@@ -1047,9 +1135,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/client/get/{id}": {
+        "/v1/client/get/{client_id}": {
             "get": {
-                "description": "Retrieve a client by its unique identifier",
+                "description": "Retrieve a client by its unique client_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -1064,7 +1152,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Clients ID to retrieve",
-                        "name": "id",
+                        "name": "client_id",
                         "in": "path",
                         "required": true
                     }
@@ -1313,9 +1401,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/client/update/{id}": {
+        "/v1/client/update/{client_id}": {
             "put": {
-                "description": "Update an existing client with the provided details",
+                "description": "Update an existing client with the provclient_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -1330,7 +1418,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Clients ID to update",
-                        "name": "id",
+                        "name": "client_id",
                         "in": "path",
                         "required": true
                     },
@@ -1408,9 +1496,116 @@ const docTemplate = `{
                 }
             }
         },
+        "/v1/courier/active-orders/list": {
+            "get": {
+                "description": "get Order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courier"
+                ],
+                "summary": "List Order Active orders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 10,
+                        "description": "limit for response",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "page of req",
+                        "name": "page",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "desc",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.ResponseModel"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/order_service.ListOrderResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/v1/courier/create": {
             "post": {
-                "description": "Create a new courier with the provided details",
+                "description": "Create a new courier with the provcourier_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -1496,9 +1691,95 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/courier/delete/{id}": {
+        "/v1/courier/delete-order/{id}": {
+            "put": {
+                "description": "api for update order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courier"
+                ],
+                "summary": "Update Order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of order",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courier/delete/{courier_id}": {
             "delete": {
-                "description": "delete a courier by its unique identifier",
+                "description": "delete a courier by its unique courier_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -1513,7 +1794,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Catgeory ID to retrieve",
-                        "name": "id",
+                        "name": "courier_id",
                         "in": "path",
                         "required": true
                     }
@@ -1582,9 +1863,95 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/courier/get/{id}": {
+        "/v1/courier/get-order/{id}": {
+            "put": {
+                "description": "api for update order",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "courier"
+                ],
+                "summary": "Update Order",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "id of order",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/v1.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/courier/get/{courier_id}": {
             "get": {
-                "description": "Retrieve a courier by its unique identifier",
+                "description": "Retrieve a courier by its unique courier_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -1599,7 +1966,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Courier ID to retrieve",
-                        "name": "id",
+                        "name": "courier_id",
                         "in": "path",
                         "required": true
                     }
@@ -1794,9 +2161,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/courier/update/{id}": {
+        "/v1/courier/update/{courier_id}": {
             "put": {
-                "description": "Update an existing courier with the provided details",
+                "description": "Update an existing courier with the provcourier_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -1811,7 +2178,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "Courier ID to update",
-                        "name": "id",
+                        "name": "courier_id",
                         "in": "path",
                         "required": true
                     },
@@ -3306,7 +3673,7 @@ const docTemplate = `{
         },
         "/v1/user/create": {
             "post": {
-                "description": "Create a new user with the provided details",
+                "description": "Create a new user with the provuser_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -3392,9 +3759,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/user/delete/{id}": {
+        "/v1/user/delete/{user_id}": {
             "delete": {
-                "description": "delete a user by its unique identifier",
+                "description": "delete a user by its unique user_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -3409,7 +3776,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Catgeory ID to retrieve",
-                        "name": "id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     }
@@ -3478,9 +3845,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/user/get/{id}": {
+        "/v1/user/get/{user_id}": {
             "get": {
-                "description": "Retrieve a user by its unique identifier",
+                "description": "Retrieve a user by its unique user_identifier",
                 "consumes": [
                     "application/json"
                 ],
@@ -3495,7 +3862,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "User ID to retrieve",
-                        "name": "id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     }
@@ -3690,9 +4057,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/user/update/{id}": {
+        "/v1/user/update/{user_id}": {
             "put": {
-                "description": "Update an existing user with the provided details",
+                "description": "Update an existing user with the provuser_ided details",
                 "consumes": [
                     "application/json"
                 ],
@@ -3707,7 +4074,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "User ID to update",
-                        "name": "id",
+                        "name": "user_id",
                         "in": "path",
                         "required": true
                     },
@@ -3978,6 +4345,28 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginReq": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.LoginRes": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

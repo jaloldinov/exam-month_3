@@ -45,6 +45,9 @@ func New(opt *RouterOptions) *gin.Engine {
 
 	apiV1 := router.Group("/v1")
 
+	apiV1.POST("/auth/sign-in", handlerV1.SignIn)
+	// apiV1.POST("/change-password", handlerV1.ChangePassword)
+
 	// category
 	apiV1.POST("/category/create", handlerV1.CreateCategory)
 	apiV1.GET("/category/list", handlerV1.GetAllCategory)
@@ -101,6 +104,7 @@ func New(opt *RouterOptions) *gin.Engine {
 	apiV1.GET("/courier/get/:courier_id", handlerV1.GetCourier)
 	apiV1.PUT("/courier/update/:courier_id", handlerV1.UpdateCourier)
 	apiV1.DELETE("/courier/delete/:courier_id", handlerV1.DeleteCourier)
+	apiV1.GET("/courier/active-orders/list", handlerV1.GetListActiveOrders)
 
 	// swagger
 	url := ginSwagger.URL("swagger/doc.json") // The url pointing to API definition

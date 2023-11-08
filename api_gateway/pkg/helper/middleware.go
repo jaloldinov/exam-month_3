@@ -2,7 +2,6 @@ package helper
 
 import (
 	"api_gateway/config"
-	"api_gateway/pkg/helper"
 
 	"fmt"
 
@@ -99,7 +98,7 @@ func ValidatePasswordMiddleware(c *gin.Context) {
 
 	password := requestBody.Password
 
-	if !helper.ValidatePassword(password) {
+	if ValidatePassword(password) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid password "})
 		c.Abort()
 		return

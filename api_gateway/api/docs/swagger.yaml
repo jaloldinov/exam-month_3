@@ -126,6 +126,20 @@ definitions:
       title:
         type: string
     type: object
+  models.LoginReq:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+      role:
+        type: string
+    type: object
+  models.LoginRes:
+    properties:
+      token:
+        type: string
+    type: object
   models.ResponseModel:
     properties:
       code:
@@ -610,6 +624,55 @@ definitions:
 info:
   contact: {}
 paths:
+  /v1/auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: api for  auth
+      parameters:
+      - description: data of person
+        in: body
+        name: person
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginRes'
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: sign in
+      tags:
+      - auth
   /v1/branch/create:
     post:
       consumes:
@@ -1094,7 +1157,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new client with the provided details
+      description: Create a new client with the provclient_ided details
       parameters:
       - description: data of the client
         in: body
@@ -1139,15 +1202,15 @@ paths:
       summary: Create a new client
       tags:
       - client
-  /v1/client/delete/{id}:
+  /v1/client/delete/{client_id}:
     delete:
       consumes:
       - application/json
-      description: delete a client by its unique identifier
+      description: delete a client by its unique client_identifier
       parameters:
       - description: Catgeory ID to retrieve
         in: path
-        name: id
+        name: client_id
         required: true
         type: string
       produces:
@@ -1187,15 +1250,15 @@ paths:
       summary: Delete a Catgory
       tags:
       - client
-  /v1/client/get/{id}:
+  /v1/client/get/{client_id}:
     get:
       consumes:
       - application/json
-      description: Retrieve a client by its unique identifier
+      description: Retrieve a client by its unique client_identifier
       parameters:
       - description: Clients ID to retrieve
         in: path
-        name: id
+        name: client_id
         required: true
         type: string
       produces:
@@ -1346,15 +1409,15 @@ paths:
       summary: GetAll Clients
       tags:
       - client
-  /v1/client/update/{id}:
+  /v1/client/update/{client_id}:
     put:
       consumes:
       - application/json
-      description: Update an existing client with the provided details
+      description: Update an existing client with the provclient_ided details
       parameters:
       - description: Clients ID to update
         in: path
-        name: id
+        name: client_id
         required: true
         type: integer
       - description: Updated data for the client
@@ -1400,11 +1463,71 @@ paths:
       summary: Update an existing client
       tags:
       - client
+  /v1/courier/active-orders/list:
+    get:
+      consumes:
+      - application/json
+      description: get Order
+      parameters:
+      - default: 10
+        description: limit for response
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 1
+        description: page of req
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/order_service.ListOrderResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: List Order Active orders
+      tags:
+      - courier
   /v1/courier/create:
     post:
       consumes:
       - application/json
-      description: Create a new courier with the provided details
+      description: Create a new courier with the provcourier_ided details
       parameters:
       - description: data of the courier
         in: body
@@ -1449,15 +1572,63 @@ paths:
       summary: Create a new courier
       tags:
       - courier
-  /v1/courier/delete/{id}:
+  /v1/courier/delete-order/{id}:
+    put:
+      consumes:
+      - application/json
+      description: api for update order
+      parameters:
+      - description: id of order
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Update Order
+      tags:
+      - courier
+  /v1/courier/delete/{courier_id}:
     delete:
       consumes:
       - application/json
-      description: delete a courier by its unique identifier
+      description: delete a courier by its unique courier_identifier
       parameters:
       - description: Catgeory ID to retrieve
         in: path
-        name: id
+        name: courier_id
         required: true
         type: string
       produces:
@@ -1497,15 +1668,63 @@ paths:
       summary: Delete a Catgory
       tags:
       - courier
-  /v1/courier/get/{id}:
+  /v1/courier/get-order/{id}:
+    put:
+      consumes:
+      - application/json
+      description: api for update order
+      parameters:
+      - description: id of order
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: Update Order
+      tags:
+      - courier
+  /v1/courier/get/{courier_id}:
     get:
       consumes:
       - application/json
-      description: Retrieve a courier by its unique identifier
+      description: Retrieve a courier by its unique courier_identifier
       parameters:
       - description: Courier ID to retrieve
         in: path
-        name: id
+        name: courier_id
         required: true
         type: string
       produces:
@@ -1620,15 +1839,15 @@ paths:
       summary: GetAll Courier
       tags:
       - courier
-  /v1/courier/update/{id}:
+  /v1/courier/update/{courier_id}:
     put:
       consumes:
       - application/json
-      description: Update an existing courier with the provided details
+      description: Update an existing courier with the provcourier_ided details
       parameters:
       - description: Courier ID to update
         in: path
-        name: id
+        name: courier_id
         required: true
         type: integer
       - description: Updated data for the courier
@@ -2474,7 +2693,7 @@ paths:
     post:
       consumes:
       - application/json
-      description: Create a new user with the provided details
+      description: Create a new user with the provuser_ided details
       parameters:
       - description: data of the user
         in: body
@@ -2519,15 +2738,15 @@ paths:
       summary: Create a new user
       tags:
       - user
-  /v1/user/delete/{id}:
+  /v1/user/delete/{user_id}:
     delete:
       consumes:
       - application/json
-      description: delete a user by its unique identifier
+      description: delete a user by its unique user_identifier
       parameters:
       - description: Catgeory ID to retrieve
         in: path
-        name: id
+        name: user_id
         required: true
         type: string
       produces:
@@ -2567,15 +2786,15 @@ paths:
       summary: Delete a Catgory
       tags:
       - user
-  /v1/user/get/{id}:
+  /v1/user/get/{user_id}:
     get:
       consumes:
       - application/json
-      description: Retrieve a user by its unique identifier
+      description: Retrieve a user by its unique user_identifier
       parameters:
       - description: User ID to retrieve
         in: path
-        name: id
+        name: user_id
         required: true
         type: string
       produces:
@@ -2690,15 +2909,15 @@ paths:
       summary: GetAll User
       tags:
       - user
-  /v1/user/update/{id}:
+  /v1/user/update/{user_id}:
     put:
       consumes:
       - application/json
-      description: Update an existing user with the provided details
+      description: Update an existing user with the provuser_ided details
       parameters:
       - description: User ID to update
         in: path
-        name: id
+        name: user_id
         required: true
         type: integer
       - description: Updated data for the user

@@ -73,6 +73,93 @@ func (b *orderRepo) UpdateStatus(c context.Context, req *order_service.UpdateOrd
 	return fmt.Sprintf("status changed from '%s' to '%s'", prevStatus, req.Status), nil
 }
 
+func (b *orderRepo) GetListByCourierId(c context.Context, req *order_service.IdRequest) (*order_service.ListOrderResponse, error) {
+	var (
+		resp   order_service.ListOrderResponse
+		err    error
+		filter string = ` WHERE deleted_at IS NULL AND status IN ('courier_accepted', 'ready_in_branch', 'on_way')  `
+		params        = make(map[string]interface{})
+	)
+	if req.Id != "" {
+		filter += " AND courier_id = :courier_id"
+		params["courier_id"] = req.Id
+	}
+
+	countQuery := `SELECT count(1) FROM "orders"  ` + filter
+
+	q, arr := helper.ReplaceQueryParams(countQuery, params)
+	err = b.db.QueryRow(c, q, arr...).Scan(
+		&resp.Count,
+	)
+
+	if err != nil {
+		return nil, fmt.Errorf("error while scanning count %w", err)
+	}
+
+	query := `
+			SELECT 
+			"id",
+			"order_id", 
+			"client_id",    
+			"branch_id", 
+			"type",
+			"address",
+			"courier_id",
+			"price",
+			"delivery_price",
+			"discount",
+			"status",
+			"payment_type",
+			"created_at",
+			"updated_at" 
+			FROM "orders"  ` + filter
+
+	q, arr = helper.ReplaceQueryParams(query, params)
+	rows, err := b.db.Query(c, q, arr...)
+	if err != nil {
+		return nil, fmt.Errorf("error while getting rows %w", err)
+	}
+	defer rows.Close()
+
+	var createdAt sql.NullString
+	var updatedAt sql.NullString
+
+	for rows.Next() {
+		var order order_service.Order
+
+		err = rows.Scan(
+			&order.Id,
+			&order.OrderId,
+			&order.ClientId,
+			&order.BranchId,
+			&order.Type,
+			&order.Address,
+			&order.CourierId,
+			&order.Price,
+			&order.DeliveryPrice,
+			&order.Discount,
+			&order.Status,
+			&order.PaymentType,
+			&createdAt,
+			&updatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("error while scanning order err: %w", err)
+		}
+
+		if createdAt.Valid {
+			order.CreatedAt = createdAt.String
+
+		}
+		if updatedAt.Valid {
+			order.UpdatedAt = createdAt.String
+		}
+		resp.Orders = append(resp.Orders, &order)
+	}
+
+	return &resp, nil
+}
+
 func (b *orderRepo) Create(c context.Context, req *order_service.CreateOrderRequest) (string, error) {
 	order_id := helper.GenerateUniqueID()
 

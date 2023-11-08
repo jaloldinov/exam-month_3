@@ -11,6 +11,10 @@ service OrderService {
     rpc Update(UpdateOrderRequest) returns (Response) {}
     rpc UpdateStatus(UpdateOrderStatusRequest) returns (Response) {}
     rpc Delete(IdRequest) returns (Response) {}
+
+    rpc GetListActiveOrders(ActiveOrderReq) returns (ListOrderResponse) {}
+    rpc GetListByCourierId(IdRequest) returns (ListOrderResponse) {}
+
 }
 
 message CreateOrderRequest {
@@ -74,6 +78,11 @@ message ListOrderRequest {
     double price_from = 8;
     double price_to = 9;
     string payment_type = 10;
+}
+
+message ActiveOrderReq {
+    int32 limit = 1;
+    int32 page = 2;
 }
 
 message ListOrderResponse {

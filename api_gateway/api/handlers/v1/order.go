@@ -4,8 +4,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	order_service "api_gateway/genproto/order_service"
+	"api_gateway/genproto/user_service"
+	"api_gateway/pkg/logger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,18 +27,52 @@ import (
 // @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
 // @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) UpdateOrderStatus(c *gin.Context) {
-
-	var order = order_service.UpdateOrderStatusRequest{}
-
+	var order order_service.UpdateOrderStatusRequest
 	err := c.ShouldBindJSON(&order)
 	if err != nil {
-		h.handleErrorResponse(c, http.StatusBadRequest, "error while binding", err.Error())
+		h.log.Error("error while binding:", logger.Error(err))
+		c.JSON(http.StatusBadRequest, "invalid body")
 		return
 	}
 
 	resp, err := h.services.Order().UpdateStatus(c.Request.Context(), &order)
-	if !handleError(h.log, c, err, "error while getting order") {
+
+	if err != nil {
+		fmt.Println("error Order Update:", err.Error())
+		c.JSON(http.StatusInternalServerError, "internal server error")
 		return
+	}
+
+	orderid := strconv.Itoa(int(order.Id))
+	if order.Status == "finished" {
+		res, err := h.services.Order().Get(c.Request.Context(), &order_service.IdRequest{Id: orderid})
+
+		if err != nil {
+			fmt.Println("error Order Get:", err.Error())
+			c.JSON(http.StatusInternalServerError, "internal server error")
+			return
+		}
+
+		clientId := strconv.Itoa(int(res.ClientId))
+		respClient, err := h.services.Client().Get(c.Request.Context(), &user_service.IdRequest{Id: clientId})
+
+		if err != nil {
+			fmt.Println("error Client Get:", err.Error())
+			c.JSON(http.StatusInternalServerError, "internal server error")
+			return
+		}
+
+		_, err = h.services.Client().UpdateOrder(c.Request.Context(), &user_service.UpdateClientsOrderRequest{
+			Id:               res.ClientId,
+			TotalOrdersCount: respClient.TotalOrdersCount + 1,
+			TotalOrdersSum:   respClient.TotalOrdersSum + res.Price,
+		})
+
+		if err != nil {
+			fmt.Println("error Client Update:", err.Error())
+			c.JSON(http.StatusInternalServerError, "internal server error")
+			return
+		}
 	}
 
 	h.handleSuccessResponse(c, http.StatusOK, "OK", resp)

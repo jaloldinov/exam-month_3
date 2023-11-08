@@ -94,7 +94,7 @@ func ValidatePort(port string) error {
 
 func ValidateOrderNo(orderNo int32) error {
 	if orderNo < 0 {
-		return errors.New("Order Number should be positive")
+		return errors.New("order number should be positive")
 	}
 
 	return nil

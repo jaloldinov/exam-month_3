@@ -13,17 +13,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// @Router       /login [post]
-// @Summary      create person
-// @Description  api for create persons
-// @Tags         persons
+// @Router       /v1/auth/sign-in [post]
+// @Summary      sign in
+// @Description  api for  auth
+// @Tags         auth
 // @Accept       json
 // @Produce      json
 // @Param        person    body     models.LoginReq  true  "data of person"
 // @Success      200  {object}  models.LoginRes
-// @Failure      400  {object}  response.ErrorResp
-// @Failure      404  {object}  response.ErrorResp
-// @Failure      500  {object}  response.ErrorResp
+// @Failure      400  {object}  Response{data=string}
+// @Failure      404  {object}  Response{data=string}
+// @Failure      500  {object}  Response{data=string}
 func (h *handlerV1) SignIn(c *gin.Context) {
 
 	var login models.LoginReq

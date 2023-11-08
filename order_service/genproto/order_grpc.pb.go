@@ -28,6 +28,8 @@ type OrderServiceClient interface {
 	Update(ctx context.Context, in *UpdateOrderRequest, opts ...grpc.CallOption) (*Response, error)
 	UpdateStatus(ctx context.Context, in *UpdateOrderStatusRequest, opts ...grpc.CallOption) (*Response, error)
 	Delete(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*Response, error)
+	GetListActiveOrders(ctx context.Context, in *ActiveOrderReq, opts ...grpc.CallOption) (*ListOrderResponse, error)
+	GetListByCourierId(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*ListOrderResponse, error)
 }
 
 type orderServiceClient struct {
@@ -92,6 +94,24 @@ func (c *orderServiceClient) Delete(ctx context.Context, in *IdRequest, opts ...
 	return out, nil
 }
 
+func (c *orderServiceClient) GetListActiveOrders(ctx context.Context, in *ActiveOrderReq, opts ...grpc.CallOption) (*ListOrderResponse, error) {
+	out := new(ListOrderResponse)
+	err := c.cc.Invoke(ctx, "/order_service.OrderService/GetListActiveOrders", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *orderServiceClient) GetListByCourierId(ctx context.Context, in *IdRequest, opts ...grpc.CallOption) (*ListOrderResponse, error) {
+	out := new(ListOrderResponse)
+	err := c.cc.Invoke(ctx, "/order_service.OrderService/GetListByCourierId", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // OrderServiceServer is the server API for OrderService service.
 // All implementations must embed UnimplementedOrderServiceServer
 // for forward compatibility
@@ -102,6 +122,8 @@ type OrderServiceServer interface {
 	Update(context.Context, *UpdateOrderRequest) (*Response, error)
 	UpdateStatus(context.Context, *UpdateOrderStatusRequest) (*Response, error)
 	Delete(context.Context, *IdRequest) (*Response, error)
+	GetListActiveOrders(context.Context, *ActiveOrderReq) (*ListOrderResponse, error)
+	GetListByCourierId(context.Context, *IdRequest) (*ListOrderResponse, error)
 	mustEmbedUnimplementedOrderServiceServer()
 }
 
@@ -126,6 +148,12 @@ func (UnimplementedOrderServiceServer) UpdateStatus(context.Context, *UpdateOrde
 }
 func (UnimplementedOrderServiceServer) Delete(context.Context, *IdRequest) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedOrderServiceServer) GetListActiveOrders(context.Context, *ActiveOrderReq) (*ListOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListActiveOrders not implemented")
+}
+func (UnimplementedOrderServiceServer) GetListByCourierId(context.Context, *IdRequest) (*ListOrderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetListByCourierId not implemented")
 }
 func (UnimplementedOrderServiceServer) mustEmbedUnimplementedOrderServiceServer() {}
 
@@ -248,6 +276,42 @@ func _OrderService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OrderService_GetListActiveOrders_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ActiveOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).GetListActiveOrders(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/order_service.OrderService/GetListActiveOrders",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).GetListActiveOrders(ctx, req.(*ActiveOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OrderService_GetListByCourierId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OrderServiceServer).GetListByCourierId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/order_service.OrderService/GetListByCourierId",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OrderServiceServer).GetListByCourierId(ctx, req.(*IdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // OrderService_ServiceDesc is the grpc.ServiceDesc for OrderService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -278,6 +342,14 @@ var OrderService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _OrderService_Delete_Handler,
+		},
+		{
+			MethodName: "GetListActiveOrders",
+			Handler:    _OrderService_GetListActiveOrders_Handler,
+		},
+		{
+			MethodName: "GetListByCourierId",
+			Handler:    _OrderService_GetListByCourierId_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
