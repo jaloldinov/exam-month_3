@@ -873,6 +873,57 @@ paths:
       summary: get list branch
       tags:
       - branch
+  /v1/branch/list/active:
+    get:
+      consumes:
+      - application/json
+      description: get Branch
+      parameters:
+      - default: 10
+        description: limit for response
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - default: 1
+        description: page of req
+        in: query
+        name: page
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: desc
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                data:
+                  $ref: '#/definitions/user_service.ListBranchResponse'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.ResponseModel'
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: List Branch
+      tags:
+      - branch
   /v1/branch/update/{branch_id}:
     put:
       consumes:

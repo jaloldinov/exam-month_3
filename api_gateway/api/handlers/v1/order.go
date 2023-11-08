@@ -53,19 +53,10 @@ func (h *handlerV1) UpdateOrderStatus(c *gin.Context) {
 			return
 		}
 
-		clientId := strconv.Itoa(int(res.ClientId))
-		respClient, err := h.services.Client().Get(c.Request.Context(), &user_service.IdRequest{Id: clientId})
-
-		if err != nil {
-			fmt.Println("error Client Get:", err.Error())
-			c.JSON(http.StatusInternalServerError, "internal server error")
-			return
-		}
-
 		_, err = h.services.Client().UpdateOrder(c.Request.Context(), &user_service.UpdateClientsOrderRequest{
 			Id:               res.ClientId,
-			TotalOrdersCount: respClient.TotalOrdersCount + 1,
-			TotalOrdersSum:   respClient.TotalOrdersSum + res.Price,
+			TotalOrdersCount: 1,
+			TotalOrdersSum:   res.Price,
 		})
 
 		if err != nil {

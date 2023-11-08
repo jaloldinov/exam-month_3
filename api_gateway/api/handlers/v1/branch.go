@@ -186,15 +186,15 @@ func (h *handlerV1) DeleteBranch(c *gin.Context) {
 // @Router       /v1/branch/list/active [get]
 // @Summary      List Branch
 // @Description  get Branch
-// @Tags         GET_BRANCH
+// @Tags         branch
 // @Accept       json
 // @Produce      json
 // @Param        limit    query     integer  true  "limit for response"  Default(10)
 // @Param        page    query     integer  true  "page of req"  Default(1)
-// @Success      200  {array}   models.Branch
-// @Failure      400  {object}  response.ErrorResp
-// @Failure      404  {object}  response.ErrorResp
-// @Failure      500  {object}  response.ErrorResp
+// @Success 200 {object} models.ResponseModel{data=user_service.ListBranchResponse} "desc"
+// @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
+// @Response 400 {object} models.ResponseModel{error=string} "Bad Request"
+// @Failure 500 {object} models.ResponseModel{error=string} "Server Error"
 func (h *handlerV1) GetListActiveBranch(c *gin.Context) {
 
 	limit, err := h.ParseQueryParam(c, "limit", "10")

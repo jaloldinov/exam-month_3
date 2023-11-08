@@ -1,15 +1,14 @@
 package helper
 
 import (
-	"crypto/rand"
 	"encoding/json"
 	"net/smtp"
 	"strconv"
 )
 
 func GenerateCode() string {
-	code := 1000 + rand.Intn(9000)
-	codeString := strconv.Itoa(code)
+	// code := 1000 + rand.Intn(9000)
+	codeString := strconv.Itoa(1000)
 	return codeString
 }
 
